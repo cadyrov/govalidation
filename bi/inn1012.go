@@ -39,8 +39,8 @@ func (inn *inn1012Rule) Validate(value interface{}) error {
 	if isNil || validation.IsEmpty(value) {
 		return nil
 	}
-	err10 := Validate(value)
-	err12 := Validate(value)
+	err10 := Inn10.Validate(value)
+	err12 := Inn12.Validate(value)
 
 	if err10 != nil && err12 != nil {
 		return errors.New(" 10 or 12 digits and control value ")

@@ -17,8 +17,8 @@ func (inn *ogrnLawIpRule) Validate(value interface{}) error {
 	if isNil || validation.IsEmpty(value) {
 		return nil
 	}
-	errLaw := Validate(value)
-	errIp := Validate(value)
+	errLaw := OGRNLaw.Validate(value)
+	errIp := OPGNIp.Validate(value)
 
 	if errLaw != nil && errIp != nil {
 		return errors.New(" 13 or 15 digits and control value ")
