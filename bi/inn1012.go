@@ -2,7 +2,7 @@ package bi
 
 import (
 	"errors"
-	validation "github.com/cadyrov/ozzo-validation"
+	validation "github.com/cadyrov/govalidation"
 
 	"strconv"
 )
