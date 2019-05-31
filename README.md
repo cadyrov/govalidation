@@ -1,9 +1,9 @@
-# ozzo-validation
+# govalidation
 
 
 ## Description
 
-ozzo-validation is a Go package that provides configurable and extensible data validation capabilities.
+govalidation is a Go package that provides configurable and extensible data validation capabilities.
 It has the following features:
 
 * use normal programming constructs rather than error-prone struct tags to specify how data should be validated.
@@ -22,7 +22,7 @@ Go 1.8 or above.
 
 ## Getting Started
 
-The ozzo-validation package mainly includes a set of validation rules and two validation methods. You use 
+The govalidation package mainly includes a set of validation rules and two validation methods. You use 
 validation rules to describe how a value should be considered valid, and you call either `validation.Validate()`
 or `validation.ValidateStruct()` to validate the value.
 
@@ -32,8 +32,8 @@ or `validation.ValidateStruct()` to validate the value.
 Run the following command to install the package:
 
 ```
-go get github.com/cadyrov/ozzo-validation
-go get github.com/cadyrov/ozzo-validation/is
+go get github.com/cadyrov/govalidation
+go get github.com/cadyrov/govalidation/is
 ```
 
 ### Validating a Simple Value
@@ -46,8 +46,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/cadyrov/ozzo-validation"
-	"github.com/cadyrov/ozzo-validation/is"
+	"github.com/cadyrov/govalidation"
+	"github.com/cadyrov/govalidation/is"
 )
 
 func main() {
@@ -83,8 +83,8 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/cadyrov/ozzo-validation"
-	"github.com/cadyrov/ozzo-validation/is"
+	"github.com/cadyrov/govalidation"
+	"github.com/cadyrov/govalidation/is"
 )
 
 type Address struct {

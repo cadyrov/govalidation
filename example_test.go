@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/cadyrov/ozzo-validation"
-	"github.com/cadyrov/ozzo-validation/is"
+	"github.com/cadyrov/govalidation"
+	"github.com/cadyrov/govalidation/is"
 )
 
 type Address struct {

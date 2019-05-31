@@ -10,7 +10,7 @@ import (
 	"unicode"
 
 	"github.com/asaskevich/govalidator"
-	"github.com/cadyrov/ozzo-validation"
+	"github.com/cadyrov/govalidation"
 )
 
 var (
