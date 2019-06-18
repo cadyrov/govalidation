@@ -8,7 +8,7 @@ import (
 	"unicode/utf8"
 )
 
-var OPGNIp = &ogrnIpRule{message: " is not correct", code: 205}
+var OPGNIp = &ogrnIpRule{message: validation.MsgByCode(1900), code: 1900}
 
 type ogrnIpRule struct {
 	message string

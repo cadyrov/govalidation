@@ -8,7 +8,7 @@ import (
 	"unicode/utf8"
 )
 
-var OGRNLaw = &ogrnLawRule{message: " is not correct", code: 204}
+var OGRNLaw = &ogrnLawRule{message: validation.MsgByCode(1900), code: 1900}
 
 type ogrnLawRule struct {
 	message string

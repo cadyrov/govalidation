@@ -5,7 +5,7 @@ import (
 	validation "github.com/cadyrov/govalidation"
 )
 
-var ORGNLawIp = &ogrnLawIpRule{message: " is not correct", code: 206}
+var ORGNLawIp = &ogrnLawIpRule{message: validation.MsgByCode(1900), code: 1900}
 
 type ogrnLawIpRule struct {
 	message string

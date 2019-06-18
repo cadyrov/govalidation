@@ -8,7 +8,7 @@ import (
 	"unicode/utf8"
 )
 
-var Snils = &snilsRule{message: " is not correct", code: 207}
+var Snils = &snilsRule{message: validation.MsgByCode(1900), code: 1900}
 
 type snilsRule struct {
 	message string

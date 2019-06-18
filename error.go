@@ -11,8 +11,16 @@ import (
 )
 
 type (
-	// Errors represents the validation errors that are indexed by struct field names, map or slice keys.
-	Errors map[string]error
+	ExternalError interface {
+		error
+		ExternalError() error
+		GetCode() int
+	}
+
+	externalError struct {
+		code int
+		error
+	}
 
 	// InternalError represents an error that should NOT be treated as a validation error.
 	InternalError interface {
@@ -23,6 +31,9 @@ type (
 	internalError struct {
 		error
 	}
+
+	// Errors represents the validation errors that are indexed by struct field names, map or slice keys.
+	Errors map[string]ExternalError
 )
 
 // NewInternalError wraps a given error into an InternalError.
@@ -33,6 +44,21 @@ func NewInternalError(err error) InternalError {
 // InternalError returns the actual error that it wraps around.
 func (e *internalError) InternalError() error {
 	return e.error
+}
+
+// InternalError returns the actual error that it wraps around.
+func (e *externalError) ExternalError() error {
+	return e.error
+}
+
+// NewExternalError wraps a given error into an InternalError.
+func NewExternalError(err error, code int) ExternalError {
+	return &externalError{error: err, code: code}
+}
+
+// InternalError returns the actual error that it wraps around.
+func (e *externalError) GetCode() int {
+	return e.code
 }
 
 // Error returns the error string of Errors.
@@ -52,7 +78,7 @@ func (es Errors) Error() string {
 		if i > 0 {
 			s += "; "
 		}
-		if errs, ok := es[key].(Errors); ok {
+		if errs, ok := es[key].(ExternalError); ok {
 			s += fmt.Sprintf("%v: (%v)", key, errs)
 		} else {
 			s += fmt.Sprintf("%v: %v", key, es[key].Error())

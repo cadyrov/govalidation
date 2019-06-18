@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-var OkatoOkpo = &okatoOkpoRule{message: " is not correct", code: 208}
+var OkatoOkpo = &okatoOkpoRule{message: validation.MsgByCode(1900), code: 1900}
 
 type okatoOkpoRule struct {
 	message string

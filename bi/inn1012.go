@@ -27,7 +27,7 @@ func checkInnDigits(inn string, coefficients []int64) bool {
 	return false
 }
 
-var Inn1012 = &inn1012Rule{message: " is not correct", code: 203}
+var Inn1012 = &inn1012Rule{message: validation.MsgByCode(1900), code: 1900}
 
 type inn1012Rule struct {
 	message string

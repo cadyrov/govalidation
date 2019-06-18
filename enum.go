@@ -67,6 +67,7 @@ func MsgByCode(code int) string {
 		1850: "must be a valid longitude",
 		1851: "must be a valid social security number",
 		1852: "must be a valid semantic version",
+		1900: "is not correct",
 	}
 	return codes[code]
 

@@ -8,7 +8,7 @@ import (
 	"unicode/utf8"
 )
 
-var Inn12 = &inn12Rule{message: " is not correct", code: 202}
+var Inn12 = &inn12Rule{message: validation.MsgByCode(1900), code: 1900}
 
 type inn12Rule struct {
 	message string
