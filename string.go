@@ -12,21 +12,23 @@ type stringValidator func(string) bool
 type StringRule struct {
 	validate stringValidator
 	message  string
+	code     int
 }
 
 // NewStringRule creates a new validation rule using a function that takes a string value and returns a bool.
 // The rule returned will use the function to check if a given string or byte slice is valid or not.
 // An empty value is considered to be valid. Please use the Required rule to make sure a value is not empty.
-func NewStringRule(validator stringValidator, message string) *StringRule {
+func NewStringRule(validator stringValidator, message string, code int) *StringRule {
 	return &StringRule{
 		validate: validator,
 		message:  message,
+		code:     code,
 	}
 }
 
 // Error sets the error message for the rule.
-func (v *StringRule) Error(message string) *StringRule {
-	return NewStringRule(v.validate, message)
+func (v *StringRule) Error(message string, code int) *StringRule {
+	return NewStringRule(v.validate, message, code)
 }
 
 // Validate checks if the given value is valid or not.

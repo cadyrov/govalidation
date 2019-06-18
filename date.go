@@ -14,6 +14,7 @@ type DateRule struct {
 	min, max     time.Time
 	message      string
 	rangeMessage string
+	code         int
 }
 
 // Date returns a validation rule that checks if a string value is in a format that can be parsed into a date.
@@ -30,20 +31,22 @@ type DateRule struct {
 func Date(layout string) *DateRule {
 	return &DateRule{
 		layout:       layout,
-		message:      "must be a valid date",
-		rangeMessage: "the data is out of range",
+		message:      MsgByCode(1100),
+		rangeMessage: MsgByCode(1150),
 	}
 }
 
 // Error sets the error message that is used when the value being validated is not a valid date.
 func (r *DateRule) Error(message string) *DateRule {
 	r.message = message
+	r.code = 1100
 	return r
 }
 
 // RangeError sets the error message that is used when the value being validated is out of the specified Min/Max date range.
 func (r *DateRule) RangeError(message string) *DateRule {
 	r.rangeMessage = message
+	r.code = 1150
 	return r
 }
 

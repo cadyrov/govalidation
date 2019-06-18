@@ -13,15 +13,16 @@ import "errors"
 // - string, array, slice, map: len() > 0
 // - interface, pointer: not nil and the referenced value is not empty
 // - any other types
-var Required = &requiredRule{message: "cannot be blank", skipNil: false}
+var Required = &requiredRule{message: MsgByCode(1700), skipNil: false, code: 1700}
 
 // NilOrNotEmpty checks if a value is a nil pointer or a value that is not empty.
 // NilOrNotEmpty differs from Required in that it treats a nil pointer as valid.
-var NilOrNotEmpty = &requiredRule{message: "cannot be blank", skipNil: true}
+var NilOrNotEmpty = &requiredRule{message: MsgByCode(1700), skipNil: true, code: 1700}
 
 type requiredRule struct {
 	message string
 	skipNil bool
+	code    int
 }
 
 // Validate checks if the given value is valid or not.

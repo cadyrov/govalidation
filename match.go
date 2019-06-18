@@ -15,13 +15,15 @@ import (
 func Match(re *regexp.Regexp) *MatchRule {
 	return &MatchRule{
 		re:      re,
-		message: "must be in a valid format",
+		message: MsgByCode(1300),
+		code:    1300,
 	}
 }
 
 type MatchRule struct {
 	re      *regexp.Regexp
 	message string
+	code    int
 }
 
 // Validate checks if the given value is valid or not.

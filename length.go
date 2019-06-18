@@ -15,22 +15,29 @@ import (
 // This rule should only be used for validating strings, slices, maps, and arrays.
 // An empty value is considered valid. Use the Required rule to make sure a value is not empty.
 func Length(min, max int) *LengthRule {
+
 	message := "the value must be empty"
+	code := 1200
 	if min == 0 && max > 0 {
-		message = fmt.Sprintf("the length must be no more than %v", max)
+		code = 1210
+		message = fmt.Sprintf(MsgByCode(code), max)
 	} else if min > 0 && max == 0 {
-		message = fmt.Sprintf("the length must be no less than %v", min)
+		code = 1220
+		message = fmt.Sprintf(MsgByCode(code), min)
 	} else if min > 0 && max > 0 {
 		if min == max {
-			message = fmt.Sprintf("the length must be exactly %v", min)
+			code = 1230
+			message = fmt.Sprintf(MsgByCode(code), min)
 		} else {
-			message = fmt.Sprintf("the length must be between %v and %v", min, max)
+			code = 1240
+			message = fmt.Sprintf(MsgByCode(code), min, max)
 		}
 	}
 	return &LengthRule{
 		min:     min,
 		max:     max,
 		message: message,
+		code:    code,
 	}
 }
 
@@ -49,6 +56,7 @@ type LengthRule struct {
 	min, max int
 	message  string
 	rune     bool
+	code     int
 }
 
 // Validate checks if the given value is valid or not.

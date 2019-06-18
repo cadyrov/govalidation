@@ -9,13 +9,15 @@ import (
 func MultipleOf(threshold interface{}) *multipleOfRule {
 	return &multipleOfRule{
 		threshold,
-		fmt.Sprintf("must be multiple of %v", threshold),
+		fmt.Sprintf(MsgByCode(1400), threshold),
+		1400,
 	}
 }
 
 type multipleOfRule struct {
 	threshold interface{}
 	message   string
+	code      int
 }
 
 // Error sets the error message for the rule.
@@ -23,7 +25,6 @@ func (r *multipleOfRule) Error(message string) *multipleOfRule {
 	r.message = message
 	return r
 }
-
 
 func (r *multipleOfRule) Validate(value interface{}) error {
 

@@ -14,13 +14,15 @@ import (
 func NotIn(values ...interface{}) *NotInRule {
 	return &NotInRule{
 		elements: values,
-		message:  "must not be in list",
+		message:  MsgByCode(1500),
+		code:     1500,
 	}
 }
 
 type NotInRule struct {
 	elements []interface{}
 	message  string
+	code     int
 }
 
 // Validate checks if the given value is valid or not.

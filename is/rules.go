@@ -15,11 +15,11 @@ import (
 
 var (
 	// Email validates if a string is an email or not.
-	Email = validation.NewStringRule(govalidator.IsEmail, "must be a valid email address")
+	Email = validation.NewStringRule(govalidator.IsEmail, validation.MsgByCode(1800), 1800)
 	// URL validates if a string is a valid URL
-	URL = validation.NewStringRule(govalidator.IsURL, "must be a valid URL")
+	URL = validation.NewStringRule(govalidator.IsURL, validation.MsgByCode(1810), 1810)
 	// RequestURL validates if a string is a valid request URL
-	RequestURL = validation.NewStringRule(govalidator.IsRequestURL, "must be a valid request URL")
+	RequestURL = validation.NewStringRule(govalidator.IsRequestURL, validation.MsgByCode(1820), 1820)
 	// RequestURI validates if a string is a valid request URI
 	RequestURI = validation.NewStringRule(govalidator.IsRequestURI, "must be a valid request URI")
 	// Alpha validates if a string contains English letters only (a-zA-Z)
