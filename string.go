@@ -19,9 +19,13 @@ type StringRule struct {
 // The rule returned will use the function to check if a given string or byte slice is valid or not.
 // An empty value is considered to be valid. Please use the Required rule to make sure a value is not empty.
 func NewStringRule(validator stringValidator, message string, code int) *StringRule {
+	msg := message
+	if code != 0 && message == "" {
+		msg = MsgByCode(code)
+	}
 	return &StringRule{
 		validate: validator,
-		message:  message,
+		message:  msg,
 		code:     code,
 	}
 }
