@@ -31,8 +31,8 @@ type DateRule struct {
 func Date(layout string) *DateRule {
 	return &DateRule{
 		layout:       layout,
-		message:      MsgByCode(1100),
-		rangeMessage: MsgByCode(1150),
+		message:      MsgByCode(1102),
+		rangeMessage: MsgByCode(1103),
 	}
 }
 

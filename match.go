@@ -15,8 +15,8 @@ import (
 func Match(re *regexp.Regexp) *MatchRule {
 	return &MatchRule{
 		re:      re,
-		message: MsgByCode(1300),
-		code:    1300,
+		message: MsgByCode(1105),
+		code:    1105,
 	}
 }
 

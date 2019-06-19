@@ -1,6 +1,9 @@
 package bi
 
-import "testing"
+import (
+	validation "github.com/cadyrov/govalidation"
+	"testing"
+)
 
 func TestInn12(t *testing.T) {
 	slInt := make([]interface{}, 0)
@@ -8,7 +11,7 @@ func TestInn12(t *testing.T) {
 
 	for i, val := range slInt {
 		vl := val
-		err := Validate(vl)
+		err := validation.Validate(vl)
 		if i == (len(slInt) - 1) {
 			if err != nil {
 				t.Fatal(err.Error())

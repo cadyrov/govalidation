@@ -8,14 +8,14 @@ import (
 	"unicode/utf8"
 )
 
-var OGRNLaw = &ogrnLawRule{message: validation.MsgByCode(1900), code: 1900}
+var OGRNLaw = &ogrnLawRule{message: validation.MsgByCode(2805), code: 2805}
 
 type ogrnLawRule struct {
 	message string
 	code    int
 }
 
-func (inn *ogrnLawRule) Validate(value interface{}) error {
+func (inn *ogrnLawRule) Validate(value interface{}) validation.ExternalError {
 	value, isNil := validation.Indirect(value)
 	if isNil || validation.IsEmpty(value) {
 		return nil
@@ -29,7 +29,7 @@ func (inn *ogrnLawRule) Validate(value interface{}) error {
 	case int64:
 		s = strconv.FormatInt(value.(int64), 10)
 	default:
-		return errors.New("can't parse value ")
+		return validation.NewExternalError(errors.New("can't parse value "), 2805)
 	}
 
 	if err := is.Digit.Validate(s); err != nil {
@@ -37,7 +37,7 @@ func (inn *ogrnLawRule) Validate(value interface{}) error {
 	}
 
 	if utf8.RuneCountInString(s) != 13 {
-		return errors.New("only 13 digits")
+		return validation.NewExternalError(errors.New("only 13 digits"), 2805)
 	}
 
 	s12 := s[:len(s)-1]
@@ -48,7 +48,7 @@ func (inn *ogrnLawRule) Validate(value interface{}) error {
 	sn := strconv.FormatInt(os, 10)
 	snX, _ := strconv.ParseInt(string(sn[len(sn)-1]), 10, 12)
 	if snX != i13 {
-		return errors.New("invalid control data")
+		return validation.NewExternalError(errors.New("invalid control data"), 2805)
 	}
 	return nil
 }
@@ -56,6 +56,6 @@ func (inn *ogrnLawRule) Validate(value interface{}) error {
 func (r *ogrnLawRule) Error(message string) *ogrnLawRule {
 	return &ogrnLawRule{
 		message: message,
-		code:    204,
+		code:    2805,
 	}
 }

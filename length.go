@@ -17,19 +17,19 @@ import (
 func Length(min, max int) *LengthRule {
 
 	message := "the value must be empty"
-	code := 1200
+	code := 1104
 	if min == 0 && max > 0 {
-		code = 1210
+		code = 1301
 		message = fmt.Sprintf(MsgByCode(code), max)
 	} else if min > 0 && max == 0 {
-		code = 1220
+		code = 1302
 		message = fmt.Sprintf(MsgByCode(code), min)
 	} else if min > 0 && max > 0 {
 		if min == max {
-			code = 1230
+			code = 1303
 			message = fmt.Sprintf(MsgByCode(code), min)
 		} else {
-			code = 1240
+			code = 1304
 			message = fmt.Sprintf(MsgByCode(code), min, max)
 		}
 	}

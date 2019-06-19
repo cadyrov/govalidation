@@ -9,8 +9,8 @@ import (
 func MultipleOf(threshold interface{}) *multipleOfRule {
 	return &multipleOfRule{
 		threshold,
-		fmt.Sprintf(MsgByCode(1400), threshold),
-		1400,
+		fmt.Sprintf(MsgByCode(1106), threshold),
+		1106,
 	}
 }
 

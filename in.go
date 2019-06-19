@@ -12,8 +12,8 @@ import "errors"
 func In(values ...interface{}) *InRule {
 	return &InRule{
 		elements: values,
-		message:  "must be a valid value",
-		code:     1012,
+		message:  MsgByCode(1101),
+		code:     1101,
 	}
 }
 
