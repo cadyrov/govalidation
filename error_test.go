@@ -29,7 +29,7 @@ func TestErrors_Error(t *testing.T) {
 	errs = Errors{
 		"B": NewExternalError(errors.New("B1"), 1),
 	}
-	assert.Equal(t, "B: B1.", errs.Error())
+	assert.Equal(t, "B: B1, 1.", errs.Error())
 
 	errs = Errors{}
 	assert.Equal(t, "", errs.Error())
@@ -56,7 +56,7 @@ func TestErrors_Filter(t *testing.T) {
 	err := errs.Filter()
 	assert.Equal(t, 2, len(errs))
 	if assert.NotNil(t, err) {
-		assert.Equal(t, "A: A1; B: B1.", err.Error())
+		assert.Equal(t, "A: A1, 1; B: B1, 2.", err.Error())
 	}
 
 	errs = Errors{}

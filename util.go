@@ -53,7 +53,7 @@ func LengthOfValue(value interface{}) (int, error) {
 	case reflect.String, reflect.Slice, reflect.Map, reflect.Array:
 		return v.Len(), nil
 	}
-	return 0, fmt.Errorf("cannot get the length of %v", v.Kind())
+	return 0, fmt.Errorf(MsgByCode(1010), v.Kind())
 }
 
 // ToInt converts the given value to an int64.
