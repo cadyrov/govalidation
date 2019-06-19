@@ -36,7 +36,7 @@ func (v *StringRule) Error(message string, code int) *StringRule {
 }
 
 // Validate checks if the given value is valid or not.
-func (v *StringRule) Validate(value interface{}) error {
+func (v *StringRule) Validate(value interface{}) ExternalError {
 	value, isNil := Indirect(value)
 	if isNil || IsEmpty(value) {
 		return nil
@@ -50,5 +50,5 @@ func (v *StringRule) Validate(value interface{}) error {
 	if v.validate(str) {
 		return nil
 	}
-	return errors.New(v.message)
+	return NewExternalError(errors.New(v.message), v.code)
 }

@@ -56,10 +56,10 @@ func TestValidate(t *testing.T) {
 }
 
 func TestBy(t *testing.T) {
-	abcRule := By(func(value interface{}) error {
+	abcRule := By(func(value interface{}) ExternalError {
 		s, _ := value.(string)
 		if s != "abc" {
-			return errors.New("must be abc")
+			return NewExternalError(errors.New("must be abc"), 4000)
 		}
 		return nil
 	})
@@ -84,27 +84,27 @@ func assertError(t *testing.T, expected string, err error, tag string) {
 
 type validateAbc struct{}
 
-func (v *validateAbc) Validate(obj interface{}) error {
+func (v *validateAbc) Validate(obj interface{}) ExternalError {
 	if !strings.Contains(obj.(string), "abc") {
-		return errors.New("error abc")
+		return NewExternalError(errors.New("error abc"), 4000)
 	}
 	return nil
 }
 
 type validateXyz struct{}
 
-func (v *validateXyz) Validate(obj interface{}) error {
+func (v *validateXyz) Validate(obj interface{}) ExternalError {
 	if !strings.Contains(obj.(string), "xyz") {
-		return errors.New("error xyz")
+		return NewExternalError(errors.New("error xyz"), 4000)
 	}
 	return nil
 }
 
 type validateInternalError struct{}
 
-func (v *validateInternalError) Validate(obj interface{}) error {
+func (v *validateInternalError) Validate(obj interface{}) ExternalError {
 	if strings.Contains(obj.(string), "internal") {
-		return NewInternalError(errors.New("error internal"))
+		return NewExternalError(errors.New(MsgByCode(1000)), 1000)
 	}
 	return nil
 }

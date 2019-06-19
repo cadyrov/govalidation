@@ -17,10 +17,10 @@ type notNilRule struct {
 }
 
 // Validate checks if the given value is valid or not.
-func (r *notNilRule) Validate(value interface{}) error {
+func (r *notNilRule) Validate(value interface{}) ExternalError {
 	_, isNil := Indirect(value)
 	if isNil {
-		return errors.New(r.message)
+		return NewExternalError(errors.New(r.message), r.code)
 	}
 	return nil
 }

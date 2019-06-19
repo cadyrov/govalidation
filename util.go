@@ -20,7 +20,7 @@ var (
 // EnsureString ensures the given value is a string.
 // If the value is a byte slice, it will be typecast into a string.
 // An error is returned otherwise.
-func EnsureString(value interface{}) (string, error) {
+func EnsureString(value interface{}) (string, ExternalError) {
 	v := reflect.ValueOf(value)
 	if v.Kind() == reflect.String {
 		return v.String(), nil
@@ -28,7 +28,7 @@ func EnsureString(value interface{}) (string, error) {
 	if v.Type() == bytesType {
 		return string(v.Interface().([]byte)), nil
 	}
-	return "", errors.New("must be either a string or byte slice")
+	return "", NewExternalError(errors.New(MsgByCode(1011)), 1011)
 }
 
 // StringOrBytes typecasts a value into a string or byte slice.

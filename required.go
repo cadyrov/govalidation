@@ -26,10 +26,10 @@ type requiredRule struct {
 }
 
 // Validate checks if the given value is valid or not.
-func (v *requiredRule) Validate(value interface{}) error {
+func (v *requiredRule) Validate(value interface{}) ExternalError {
 	value, isNil := Indirect(value)
 	if v.skipNil && !isNil && IsEmpty(value) || !v.skipNil && (isNil || IsEmpty(value)) {
-		return errors.New(v.message)
+		return NewExternalError(errors.New(v.message), v.code)
 	}
 	return nil
 }

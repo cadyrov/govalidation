@@ -20,14 +20,14 @@ func TestNewInternalError(t *testing.T) {
 
 func TestErrors_Error(t *testing.T) {
 	errs := Errors{
-		"B": errors.New("B1"),
-		"C": errors.New("C1"),
-		"A": errors.New("A1"),
+		"B": NewExternalError(errors.New("B1"), 1),
+		"C": NewExternalError(errors.New("C1"), 2),
+		"A": NewExternalError(errors.New("A1"), 3),
 	}
 	assert.Equal(t, "A: A1; B: B1; C: C1.", errs.Error())
 
 	errs = Errors{
-		"B": errors.New("B1"),
+		"B": NewExternalError(errors.New("B1"), 1),
 	}
 	assert.Equal(t, "B: B1.", errs.Error())
 
@@ -37,9 +37,9 @@ func TestErrors_Error(t *testing.T) {
 
 func TestErrors_MarshalMessage(t *testing.T) {
 	errs := Errors{
-		"A": errors.New("A1"),
+		"A": NewExternalError(errors.New("A1"), 1),
 		"B": Errors{
-			"2": errors.New("B1"),
+			"2": NewExternalError(errors.New("B1"), 2),
 		},
 	}
 	errsJSON, err := errs.MarshalJSON()
@@ -49,9 +49,9 @@ func TestErrors_MarshalMessage(t *testing.T) {
 
 func TestErrors_Filter(t *testing.T) {
 	errs := Errors{
-		"B": errors.New("B1"),
+		"B": NewExternalError(errors.New("B1"), 2),
 		"C": nil,
-		"A": errors.New("A1"),
+		"A": NewExternalError(errors.New("A1"), 1),
 	}
 	err := errs.Filter()
 	assert.Equal(t, 2, len(errs))

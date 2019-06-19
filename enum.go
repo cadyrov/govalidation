@@ -2,6 +2,15 @@ package validation
 
 func MsgByCode(code int) string {
 	codes := map[int]string{
+		1000: "internal",
+		1001: "only a pointer to a struct can be validated",
+		1002: "field #%v must be specified as a pointer",
+		1003: "field #%v cannot be found in the struct",
+
+		1010: "cannot get the length of %v",
+		1011: "must be either a string or byte slice",
+		1012: "must be a valid value",
+
 		1100: "must be a valid date",
 		1150: "the data is out of range",
 		1200: "the value must be empty",

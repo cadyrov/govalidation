@@ -13,16 +13,18 @@ func In(values ...interface{}) *InRule {
 	return &InRule{
 		elements: values,
 		message:  "must be a valid value",
+		code:     1012,
 	}
 }
 
 type InRule struct {
 	elements []interface{}
 	message  string
+	code     int
 }
 
 // Validate checks if the given value is valid or not.
-func (r *InRule) Validate(value interface{}) error {
+func (r *InRule) Validate(value interface{}) ExternalError {
 	value, isNil := Indirect(value)
 	if isNil || IsEmpty(value) {
 		return nil
@@ -33,7 +35,7 @@ func (r *InRule) Validate(value interface{}) error {
 			return nil
 		}
 	}
-	return errors.New(r.message)
+	return NewExternalError(errors.New(r.message), r.code)
 }
 
 // Error sets the error message for the rule.

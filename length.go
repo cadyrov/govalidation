@@ -60,7 +60,7 @@ type LengthRule struct {
 }
 
 // Validate checks if the given value is valid or not.
-func (v *LengthRule) Validate(value interface{}) error {
+func (v *LengthRule) Validate(value interface{}) ExternalError {
 	value, isNil := Indirect(value)
 	if isNil || IsEmpty(value) {
 		return nil
@@ -73,11 +73,11 @@ func (v *LengthRule) Validate(value interface{}) error {
 	if s, ok := value.(string); ok && v.rune {
 		l = utf8.RuneCountInString(s)
 	} else if l, err = LengthOfValue(value); err != nil {
-		return err
+		return NewExternalError(errors.New(v.message), 1000)
 	}
 
 	if v.min > 0 && l < v.min || v.max > 0 && l > v.max {
-		return errors.New(v.message)
+		return NewExternalError(errors.New(v.message), v.code)
 	}
 	return nil
 }

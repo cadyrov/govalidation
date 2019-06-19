@@ -27,7 +27,7 @@ type MatchRule struct {
 }
 
 // Validate checks if the given value is valid or not.
-func (v *MatchRule) Validate(value interface{}) error {
+func (v *MatchRule) Validate(value interface{}) ExternalError {
 	value, isNil := Indirect(value)
 	if isNil {
 		return nil
@@ -39,7 +39,7 @@ func (v *MatchRule) Validate(value interface{}) error {
 	} else if isBytes && (len(bs) == 0 || v.re.Match(bs)) {
 		return nil
 	}
-	return errors.New(v.message)
+	return NewExternalError(errors.New(v.message), v.code)
 }
 
 // Error sets the error message for the rule.

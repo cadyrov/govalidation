@@ -15,18 +15,18 @@ type (
 	// Validatable is the interface indicating the type implementing it supports data validation.
 	Validatable interface {
 		// Validate validates the data and returns an error if validation fails.
-		Validate() error
+		Validate() ExternalError
 	}
 
 	// Rule represents a validation rule.
 	Rule interface {
 		// Validate validates a value and returns a value if validation fails.
-		Validate(value interface{}) error
+		Validate(value interface{}) ExternalError
 	}
 
 	// RuleFunc represents a validator function.
 	// You may wrap it as a Rule by calling By().
-	RuleFunc func(value interface{}) error
+	RuleFunc func(value interface{}) ExternalError
 )
 
 var (
@@ -45,7 +45,7 @@ var (
 // - validate the value against the rules passed in as parameters
 // - if the value is a map and the map values implement `Validatable`, call `Validate` of every map value
 // - if the value is a slice or array whose values implement `Validatable`, call `Validate` of every element
-func Validate(value interface{}, rules ...Rule) error {
+func Validate(value interface{}, rules ...Rule) ExternalError {
 	for _, rule := range rules {
 		if _, ok := rule.(*skipRule); ok {
 			return nil
@@ -81,7 +81,7 @@ func Validate(value interface{}, rules ...Rule) error {
 }
 
 // validateMap validates a map of validatable elements
-func validateMap(rv reflect.Value) error {
+func validateMap(rv reflect.Value) ExternalError {
 	errs := Errors{}
 	for _, key := range rv.MapKeys() {
 		if mv := rv.MapIndex(key).Interface(); mv != nil {
@@ -97,7 +97,7 @@ func validateMap(rv reflect.Value) error {
 }
 
 // validateMap validates a slice/array of validatable elements
-func validateSlice(rv reflect.Value) error {
+func validateSlice(rv reflect.Value) ExternalError {
 	errs := Errors{}
 	l := rv.Len()
 	for i := 0; i < l; i++ {
@@ -115,7 +115,7 @@ func validateSlice(rv reflect.Value) error {
 
 type skipRule struct{}
 
-func (r *skipRule) Validate(interface{}) error {
+func (r *skipRule) Validate(interface{}) ExternalError {
 	return nil
 }
 
@@ -123,7 +123,7 @@ type inlineRule struct {
 	f RuleFunc
 }
 
-func (r *inlineRule) Validate(value interface{}) error {
+func (r *inlineRule) Validate(value interface{}) ExternalError {
 	return r.f(value)
 }
 

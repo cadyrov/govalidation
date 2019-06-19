@@ -6,6 +6,7 @@ package validation
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sort"
 )
@@ -14,7 +15,7 @@ type (
 	ExternalError interface {
 		error
 		ExternalError() error
-		GetCode() int
+		GetCode() string
 	}
 
 	externalError struct {
@@ -57,12 +58,62 @@ func NewExternalError(err error, code int) ExternalError {
 }
 
 // InternalError returns the actual error that it wraps around.
-func (e *externalError) GetCode() int {
-	return e.code
+func (e *externalError) GetCode() string {
+	return fmt.Sprint(e.code)
 }
 
 // Error returns the error string of Errors.
 func (es Errors) Error() string {
+	if len(es) == 0 {
+		return ""
+	}
+
+	keys := []string{}
+	for key := range es {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	s := ""
+	for i, key := range keys {
+		if i > 0 {
+			s += "; "
+		}
+		if errs, ok := es[key].(ExternalError); ok {
+			s += fmt.Sprintf("%v: (%v), %v", key, errs.ExternalError().Error(), errs.GetCode())
+		} else {
+			s += fmt.Sprintf("%v: %v", key, es[key].Error())
+		}
+	}
+	return s + "."
+}
+
+func (es Errors) ExternalError() error {
+	if len(es) == 0 {
+		return nil
+	}
+
+	keys := []string{}
+	for key := range es {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	s := ""
+	for i, key := range keys {
+		if i > 0 {
+			s += "; "
+		}
+		if errs, ok := es[key].(ExternalError); ok {
+			s += fmt.Sprintf("%v: (%v)", key, errs)
+		} else {
+			s += fmt.Sprintf("%v: %v", key, es[key].Error())
+		}
+	}
+	return errors.New(s)
+}
+
+func (es Errors) GetCode() string {
 	if len(es) == 0 {
 		return ""
 	}

@@ -63,7 +63,7 @@ func (r *DateRule) Max(max time.Time) *DateRule {
 }
 
 // Validate checks if the given value is a valid date.
-func (r *DateRule) Validate(value interface{}) error {
+func (r *DateRule) Validate(value interface{}) ExternalError {
 	value, isNil := Indirect(value)
 	if isNil || IsEmpty(value) {
 		return nil
@@ -74,13 +74,13 @@ func (r *DateRule) Validate(value interface{}) error {
 		return err
 	}
 
-	date, err := time.Parse(r.layout, str)
-	if err != nil {
-		return errors.New(r.message)
+	date, errt := time.Parse(r.layout, str)
+	if errt != nil {
+		return NewExternalError(errors.New(r.message), r.code)
 	}
 
 	if !r.min.IsZero() && r.min.After(date) || !r.max.IsZero() && date.After(r.max) {
-		return errors.New(r.rangeMessage)
+		return NewExternalError(errors.New(r.rangeMessage), r.code)
 	}
 
 	return nil
