@@ -5,14 +5,14 @@ import (
 	validation "github.com/cadyrov/govalidation"
 )
 
-var ORGNLawIp = &ogrnLawIpRule{message: validation.MsgByCode(1900), code: 1900}
+var ORGNLawIp = &ogrnLawIpRule{message: validation.MsgByCode(2806), code: 2806}
 
 type ogrnLawIpRule struct {
 	message string
 	code    int
 }
 
-func (inn *ogrnLawIpRule) Validate(value interface{}) error {
+func (inn *ogrnLawIpRule) Validate(value interface{}) validation.ExternalError {
 	value, isNil := validation.Indirect(value)
 	if isNil || validation.IsEmpty(value) {
 		return nil
@@ -21,7 +21,7 @@ func (inn *ogrnLawIpRule) Validate(value interface{}) error {
 	errIp := OPGNIp.Validate(value)
 
 	if errLaw != nil && errIp != nil {
-		return errors.New(" 13 or 15 digits and control value ")
+		return validation.NewExternalError(errors.New(" 13 or 15 digits and control value "), 2806)
 	}
 	return nil
 }
@@ -29,6 +29,6 @@ func (inn *ogrnLawIpRule) Validate(value interface{}) error {
 func (r *ogrnLawIpRule) Error(message string) *ogrnLawIpRule {
 	return &ogrnLawIpRule{
 		message: message,
-		code:    206,
+		code:    2806,
 	}
 }

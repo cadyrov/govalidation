@@ -28,7 +28,7 @@ func EnsureString(value interface{}) (string, ExternalError) {
 	if v.Type() == bytesType {
 		return string(v.Interface().([]byte)), nil
 	}
-	return "", NewExternalError(errors.New(MsgByCode(1011)), 1011)
+	return "", NewExternalError(errors.New(MsgByCode(1005)), 1005)
 }
 
 // StringOrBytes typecasts a value into a string or byte slice.
@@ -53,7 +53,7 @@ func LengthOfValue(value interface{}) (int, error) {
 	case reflect.String, reflect.Slice, reflect.Map, reflect.Array:
 		return v.Len(), nil
 	}
-	return 0, fmt.Errorf(MsgByCode(1010), v.Kind())
+	return 0, fmt.Errorf(MsgByCode(1004), v.Kind())
 }
 
 // ToInt converts the given value to an int64.

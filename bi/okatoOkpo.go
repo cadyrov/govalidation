@@ -7,14 +7,14 @@ import (
 	"strconv"
 )
 
-var OkatoOkpo = &okatoOkpoRule{message: validation.MsgByCode(1900), code: 1900}
+var OkatoOkpo = &okatoOkpoRule{message: validation.MsgByCode(2807), code: 2807}
 
 type okatoOkpoRule struct {
 	message string
 	code    int
 }
 
-func (inn *okatoOkpoRule) Validate(value interface{}) error {
+func (inn *okatoOkpoRule) Validate(value interface{}) validation.ExternalError {
 	value, isNil := validation.Indirect(value)
 	if isNil || validation.IsEmpty(value) {
 		return nil
@@ -29,7 +29,7 @@ func (inn *okatoOkpoRule) Validate(value interface{}) error {
 	case int64:
 		s = strconv.FormatInt(value.(int64), 10)
 	default:
-		return errors.New("can't parse value ")
+		return validation.NewExternalError(errors.New("can't parse value "), 2807)
 	}
 
 	if err := is.Digit.Validate(s); err != nil {
@@ -53,7 +53,7 @@ func (inn *okatoOkpoRule) Validate(value interface{}) error {
 	}
 
 	if cn != controlDigit {
-		return errors.New("invalid control value ")
+		return validation.NewExternalError(errors.New("invalid control value "), 2807)
 	}
 	return nil
 }
@@ -61,7 +61,7 @@ func (inn *okatoOkpoRule) Validate(value interface{}) error {
 func (r *okatoOkpoRule) Error(message string) *snilsRule {
 	return &snilsRule{
 		message: message,
-		code:    207,
+		code:    2807,
 	}
 }
 

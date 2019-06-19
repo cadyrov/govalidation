@@ -8,14 +8,14 @@ import (
 	"unicode/utf8"
 )
 
-var OPGNIp = &ogrnIpRule{message: validation.MsgByCode(1900), code: 1900}
+var OPGNIp = &ogrnIpRule{message: validation.MsgByCode(2804), code: 2804}
 
 type ogrnIpRule struct {
 	message string
 	code    int
 }
 
-func (inn *ogrnIpRule) Validate(value interface{}) error {
+func (inn *ogrnIpRule) Validate(value interface{}) validation.ExternalError {
 	value, isNil := validation.Indirect(value)
 	if isNil || validation.IsEmpty(value) {
 		return nil
@@ -29,7 +29,7 @@ func (inn *ogrnIpRule) Validate(value interface{}) error {
 	case int64:
 		s = strconv.FormatInt(value.(int64), 10)
 	default:
-		return errors.New("can't parse value ")
+		return validation.NewExternalError(errors.New("can't parse value "), 2804)
 	}
 
 	if err := is.Digit.Validate(s); err != nil {
@@ -37,7 +37,7 @@ func (inn *ogrnIpRule) Validate(value interface{}) error {
 	}
 
 	if utf8.RuneCountInString(s) != 15 {
-		return errors.New("only 15 digits")
+		return validation.NewExternalError(errors.New("only 15 digits"), 2804)
 	}
 
 	s14 := s[:len(s)-1]
@@ -48,7 +48,7 @@ func (inn *ogrnIpRule) Validate(value interface{}) error {
 	sn := strconv.FormatInt(os, 10)
 	snX, _ := strconv.ParseInt(string(sn[len(sn)-1]), 10, 12)
 	if snX != i15 {
-		return errors.New("invalid control data")
+		return validation.NewExternalError(errors.New("invalid control data"), 2804)
 	}
 	return nil
 }
@@ -56,6 +56,6 @@ func (inn *ogrnIpRule) Validate(value interface{}) error {
 func (r *ogrnIpRule) Error(message string) *ogrnIpRule {
 	return &ogrnIpRule{
 		message: message,
-		code:    205,
+		code:    2804,
 	}
 }

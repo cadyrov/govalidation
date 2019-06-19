@@ -14,8 +14,8 @@ import (
 func NotIn(values ...interface{}) *NotInRule {
 	return &NotInRule{
 		elements: values,
-		message:  MsgByCode(1500),
-		code:     1500,
+		message:  MsgByCode(1107),
+		code:     1107,
 	}
 }
 
