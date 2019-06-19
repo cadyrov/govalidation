@@ -80,7 +80,7 @@ func (es Errors) Error() string {
 			s += "; "
 		}
 		if errs, ok := es[key].(ExternalError); ok {
-			s += fmt.Sprintf("%v: %v, %v", key, errs.Error(), errs.GetCode())
+			s += fmt.Sprintf("%v: %v || ErrCode: %v", key, errs.Error(), errs.GetCode())
 		} else {
 			s += fmt.Sprintf("%v: %v", key, es[key].Error())
 		}
