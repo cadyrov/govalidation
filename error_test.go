@@ -24,7 +24,7 @@ func TestErrors_Error(t *testing.T) {
 		"C": NewExternalError(errors.New("C1"), 2),
 		"A": NewExternalError(errors.New("A1"), 3),
 	}
-	assert.Equal(t, "A: A1; B: B1; C: C1.", errs.Error())
+	assert.Equal(t, "A: A1, 3; B: B1, 1; C: C1, 2.", errs.Error())
 
 	errs = Errors{
 		"B": NewExternalError(errors.New("B1"), 1),
