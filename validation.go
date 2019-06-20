@@ -15,7 +15,7 @@ type (
 	// Validatable is the interface indicating the type implementing it supports data validation.
 	Validatable interface {
 		// Validate validates the data and returns an error if validation fails.
-		Validate() ExternalError
+		Validate() error
 	}
 
 	// Rule represents a validation rule.
@@ -61,7 +61,7 @@ func Validate(value interface{}, rules ...Rule) ExternalError {
 	}
 
 	if v, ok := value.(Validatable); ok {
-		return v.Validate()
+		return NewExternalError(v.Validate(), 0)
 	}
 
 	switch rv.Kind() {
@@ -86,7 +86,7 @@ func validateMap(rv reflect.Value) ExternalError {
 	for _, key := range rv.MapKeys() {
 		if mv := rv.MapIndex(key).Interface(); mv != nil {
 			if err := mv.(Validatable).Validate(); err != nil {
-				errs[fmt.Sprintf("%v", key.Interface())] = err
+				errs[fmt.Sprintf("%v", key.Interface())] = NewExternalError(err, 0)
 			}
 		}
 	}
@@ -103,7 +103,7 @@ func validateSlice(rv reflect.Value) ExternalError {
 	for i := 0; i < l; i++ {
 		if ev := rv.Index(i).Interface(); ev != nil {
 			if err := ev.(Validatable).Validate(); err != nil {
-				errs[strconv.Itoa(i)] = err
+				errs[strconv.Itoa(i)] = NewExternalError(err, 0)
 			}
 		}
 	}

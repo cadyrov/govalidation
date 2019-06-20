@@ -47,13 +47,13 @@ func StringOrBytes(value interface{}) (isString bool, str string, isBytes bool, 
 
 // LengthOfValue returns the length of a value that is a string, slice, map, or array.
 // An error is returned for all other types.
-func LengthOfValue(value interface{}) (int, error) {
+func LengthOfValue(value interface{}) (int, ExternalError) {
 	v := reflect.ValueOf(value)
 	switch v.Kind() {
 	case reflect.String, reflect.Slice, reflect.Map, reflect.Array:
 		return v.Len(), nil
 	}
-	return 0, fmt.Errorf(MsgByCode(1004), v.Kind())
+	return 0, NewExternalError(fmt.Errorf(MsgByCode(1004), v.Kind()), 1004)
 }
 
 // ToInt converts the given value to an int64.

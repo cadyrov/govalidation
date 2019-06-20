@@ -68,12 +68,12 @@ func (v *LengthRule) Validate(value interface{}) ExternalError {
 
 	var (
 		l   int
-		err error
+		err ExternalError
 	)
 	if s, ok := value.(string); ok && v.rune {
 		l = utf8.RuneCountInString(s)
 	} else if l, err = LengthOfValue(value); err != nil {
-		return NewExternalError(errors.New(v.message), 1000)
+		return err
 	}
 
 	if v.min > 0 && l < v.min || v.max > 0 && l > v.max {

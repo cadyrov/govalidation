@@ -23,33 +23,16 @@ type (
 		error
 	}
 
-	// InternalError represents an error that should NOT be treated as a validation error.
-	InternalError interface {
-		error
-		InternalError() error
-	}
-
-	internalError struct {
-		error
-	}
-
 	// Errors represents the validation errors that are indexed by struct field names, map or slice keys.
 	Errors map[string]ExternalError
 )
 
-// NewInternalError wraps a given error into an InternalError.
-func NewInternalError(err error) InternalError {
-	return &internalError{error: err}
-}
-
-// InternalError returns the actual error that it wraps around.
-func (e *internalError) InternalError() error {
-	return e.error
-}
-
-// InternalError returns the actual error that it wraps around.
 func (e *externalError) ExternalError() error {
 	return e.error
+}
+
+func (e *externalError) Error() string {
+	return fmt.Sprintf("%v, ErrCode: %v", e.error, e.GetCode())
 }
 
 // NewExternalError wraps a given error into an InternalError.

@@ -98,7 +98,7 @@ func ValidateStruct(structPtr interface{}, fields ...*FieldRules) ExternalError 
 			return ErrFieldNotFound(i)
 		}
 		if err := Validate(fv.Elem().Interface(), fr.rules...); err != nil {
-			if ie, ok := err.(InternalError); ok && ie.InternalError() != nil {
+			if ie, ok := err.(ExternalError); ok && ie.ExternalError() != nil {
 				return err
 			}
 			if ft.Anonymous {

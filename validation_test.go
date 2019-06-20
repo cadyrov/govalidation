@@ -32,7 +32,9 @@ func TestValidate(t *testing.T) {
 	}
 	for _, test := range tests {
 		err := Validate(test.value)
+
 		assertError(t, test.err, err, test.tag)
+
 	}
 
 	// with rules

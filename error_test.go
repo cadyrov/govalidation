@@ -11,10 +11,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewInternalError(t *testing.T) {
-	err := NewInternalError(errors.New("abc"))
-	if assert.NotNil(t, err.InternalError()) {
-		assert.Equal(t, "abc", err.InternalError().Error())
+func TestNewExternalError(t *testing.T) {
+	err := NewExternalError(errors.New("abc"), 4545)
+	if assert.NotNil(t, err.ExternalError()) {
+		assert.Equal(t, "abc, ErrCode: 4545", err.ExternalError().Error())
 	}
 }
 
@@ -56,7 +56,7 @@ func TestErrors_Filter(t *testing.T) {
 	err := errs.Filter()
 	assert.Equal(t, 2, len(errs))
 	if assert.NotNil(t, err) {
-		assert.Equal(t, "A: A1, 1; B: B1, 2.", err.Error())
+		assert.Equal(t, "A: A1, ErrCode: 1; B: B1, ErrCode: 2.", err.Error())
 	}
 
 	errs = Errors{}

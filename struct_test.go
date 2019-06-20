@@ -78,8 +78,8 @@ func TestValidateStruct(t *testing.T) {
 		{"t1.2", &m1, []*FieldRules{Field(&m1.A), Field(&m1.B)}, ""},
 		// normal rules
 		{"t2.1", &m1, []*FieldRules{Field(&m1.A, &validateAbc{}), Field(&m1.B, &validateXyz{})}, ""},
-		{"t2.2", &m1, []*FieldRules{Field(&m1.A, &validateXyz{}), Field(&m1.B, &validateAbc{})}, "A: error xyz; B: error abc."},
-		{"t2.3", &m1, []*FieldRules{Field(&m1.A, &validateXyz{}), Field(&m1.c, &validateXyz{})}, "A: error xyz; c: error xyz."},
+		{"t2.2", &m1, []*FieldRules{Field(&m1.A, &validateXyz{}), Field(&m1.B, &validateAbc{})}, "A: error xyz, ErrCode: 4000; B: error abc, ErrCode: 4000."},
+		{"t2.3", &m1, []*FieldRules{Field(&m1.A, &validateXyz{}), Field(&m1.c, &validateXyz{})}, "A: error xyz, ErrCode: 4000; c: error xyz, ErrCode: 4000."},
 		{"t2.4", &m1, []*FieldRules{Field(&m1.D, Length(0, 5))}, ""},
 		{"t2.5", &m1, []*FieldRules{Field(&m1.F, Length(0, 5))}, ""},
 		// non-struct pointer
@@ -91,12 +91,12 @@ func TestValidateStruct(t *testing.T) {
 		{"t4.1", &m1, []*FieldRules{Field(m1)}, ErrFieldPointer(0).Error()},
 		{"t4.2", &m1, []*FieldRules{Field(&m1)}, ErrFieldNotFound(0).Error()},
 		// struct tag
-		{"t5.1", &m1, []*FieldRules{Field(&m1.G, &validateAbc{})}, "g: error abc."},
+		{"t5.1", &m1, []*FieldRules{Field(&m1.G, &validateAbc{})}, "g: error abc, ErrCode: 4000."},
 		// validatable field
 		{"t6.1", &m2, []*FieldRules{Field(&m2.E)}, "E: error 123."},
 		{"t6.2", &m2, []*FieldRules{Field(&m2.E, Skip)}, ""},
 		// Required, NotNil
-		{"t7.1", &m2, []*FieldRules{Field(&m2.F, Required)}, "F: cannot be blank."},
+		{"t7.1", &m2, []*FieldRules{Field(&m2.F, Required)}, "F: cannot be blank, ErrCode: 1202."},
 		{"t7.2", &m2, []*FieldRules{Field(&m2.F, NotNil)}, "F: is required, ErrCode: 1201."},
 		{"t7.3", &m2, []*FieldRules{Field(&m2.E, Required, Skip)}, ""},
 		{"t7.4", &m2, []*FieldRules{Field(&m2.E, NotNil, Skip)}, ""},
@@ -110,7 +110,7 @@ func TestValidateStruct(t *testing.T) {
 		{"t8.7", &m3, []*FieldRules{Field(&m3.A, Required), Field(&m3.B, Required)}, "A: cannot be blank, ErrCode: 1202; B: cannot be blank, ErrCode: 1202."},
 		{"t8.8", &m3, []*FieldRules{Field(&m4.A, Required)}, "field #0 cannot be found in the struct"},
 		// internal error
-		{"t9.1", &m5, []*FieldRules{Field(&m5.A, &validateAbc{}), Field(&m5.B, Required), Field(&m5.A, &validateInternalError{})}, "error internal"},
+		{"t9.1", &m5, []*FieldRules{Field(&m5.A, &validateAbc{}), Field(&m5.B, Required), Field(&m5.A, &validateInternalError{})}, "A: internal, ErrCode: 1000; B: cannot be blank, ErrCode: 1202."},
 	}
 	for _, test := range tests {
 		err := ValidateStruct(test.model, test.rules...)
@@ -132,6 +132,6 @@ func TestValidateStruct(t *testing.T) {
 		Field(&a.Value, Required, Length(5, 10)),
 	)
 	if assert.NotNil(t, err) {
-		assert.Equal(t, "Value: the length must be between 5 and 10.", err.Error())
+		assert.Equal(t, "Value: the length must be between 5 and 10, ErrCode: 1304.", err.Error())
 	}
 }
