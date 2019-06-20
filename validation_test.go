@@ -1,7 +1,3 @@
-// Copyright 2016 Qiang Xue. All rights reserved.
-// Use of this source code is governed by a MIT-style
-// license that can be found in the LICENSE file.
-
 package validation
 
 import (
@@ -40,18 +36,18 @@ func TestValidate(t *testing.T) {
 	// with rules
 	err := Validate("123", &validateAbc{}, &validateXyz{})
 	if assert.NotNil(t, err) {
-		assert.Equal(t, "error abc", err.Error())
+		assert.Equal(t, "error abc, ErrCode: 4000", err.Error())
 	}
 	err = Validate("abc", &validateAbc{}, &validateXyz{})
 	if assert.NotNil(t, err) {
-		assert.Equal(t, "error xyz", err.Error())
+		assert.Equal(t, "error xyz, ErrCode: 4000", err.Error())
 	}
 	err = Validate("abcxyz", &validateAbc{}, &validateXyz{})
 	assert.Nil(t, err)
 
 	err = Validate("123", &validateAbc{}, Skip, &validateXyz{})
 	if assert.NotNil(t, err) {
-		assert.Equal(t, "error abc", err.Error())
+		assert.Equal(t, "error abc, ErrCode: 4000", err.Error())
 	}
 	err = Validate("abc", &validateAbc{}, Skip, &validateXyz{})
 	assert.Nil(t, err)
@@ -68,7 +64,7 @@ func TestBy(t *testing.T) {
 	assert.Nil(t, Validate("abc", abcRule))
 	err := Validate("xyz", abcRule)
 	if assert.NotNil(t, err) {
-		assert.Equal(t, "must be abc", err.Error())
+		assert.Equal(t, "must be abc, ErrCode: 4000", err.Error())
 	}
 }
 

@@ -1,7 +1,3 @@
-// Copyright 2016 Qiang Xue. All rights reserved.
-// Use of this source code is governed by a MIT-style
-// license that can be found in the LICENSE file.
-
 package validation
 
 import (
@@ -93,8 +89,8 @@ func TestLengthOfValue(t *testing.T) {
 		{"t2", []int{1, 2}, 2, ""},
 		{"t3", map[string]int{"A": 1, "B": 2}, 2, ""},
 		{"t4", a, 3, ""},
-		{"t5", &a, 0, "cannot get the length of ptr"},
-		{"t6", 123, 0, "cannot get the length of int"},
+		{"t5", &a, 0, "cannot get the length of ptr, ErrCode: 1004"},
+		{"t6", 123, 0, "cannot get the length of int, ErrCode: 1004"},
 	}
 
 	for _, test := range tests {

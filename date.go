@@ -1,7 +1,3 @@
-// Copyright 2016 Qiang Xue. All rights reserved.
-// Use of this source code is governed by a MIT-style
-// license that can be found in the LICENSE file.
-
 package validation
 
 import (
@@ -15,6 +11,7 @@ type DateRule struct {
 	message      string
 	rangeMessage string
 	code         int
+	rangeCode    int
 }
 
 // Date returns a validation rule that checks if a string value is in a format that can be parsed into a date.
@@ -33,20 +30,22 @@ func Date(layout string) *DateRule {
 		layout:       layout,
 		message:      MsgByCode(1102),
 		rangeMessage: MsgByCode(1103),
+		code:         1102,
+		rangeCode:    1103,
 	}
 }
 
 // Error sets the error message that is used when the value being validated is not a valid date.
 func (r *DateRule) Error(message string) *DateRule {
 	r.message = message
-	r.code = 1100
+	r.code = 1102
 	return r
 }
 
 // RangeError sets the error message that is used when the value being validated is out of the specified Min/Max date range.
 func (r *DateRule) RangeError(message string) *DateRule {
 	r.rangeMessage = message
-	r.code = 1150
+	r.rangeCode = 1103
 	return r
 }
 
@@ -80,7 +79,7 @@ func (r *DateRule) Validate(value interface{}) ExternalError {
 	}
 
 	if !r.min.IsZero() && r.min.After(date) || !r.max.IsZero() && date.After(r.max) {
-		return NewExternalError(errors.New(r.rangeMessage), r.code)
+		return NewExternalError(errors.New(r.rangeMessage), r.rangeCode)
 	}
 
 	return nil

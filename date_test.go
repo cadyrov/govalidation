@@ -1,7 +1,3 @@
-// Copyright 2016 Qiang Xue. All rights reserved.
-// Use of this source code is governed by a MIT-style
-// license that can be found in the LICENSE file.
-
 package validation
 
 import (
@@ -20,13 +16,13 @@ func TestDate(t *testing.T) {
 	}{
 		{"t1", time.ANSIC, "", ""},
 		{"t2", time.ANSIC, "Wed Feb  4 21:00:57 2009", ""},
-		{"t3", time.ANSIC, "Wed Feb  29 21:00:57 2009", "must be a valid date"},
+		{"t3", time.ANSIC, "Wed Feb  29 21:00:57 2009", "must be a valid date, ErrCode: 1102"},
 		{"t4", "2006-01-02", "2009-11-12", ""},
-		{"t5", "2006-01-02", "2009-11-12 21:00:57", "must be a valid date"},
-		{"t6", "2006-01-02", "2009-1-12", "must be a valid date"},
+		{"t5", "2006-01-02", "2009-11-12 21:00:57", "must be a valid date, ErrCode: 1102"},
+		{"t6", "2006-01-02", "2009-1-12", "must be a valid date, ErrCode: 1102"},
 		{"t7", "2006-01-02", "2009-01-12", ""},
-		{"t8", "2006-01-02", "2009-01-32", "must be a valid date"},
-		{"t9", "2006-01-02", 1, "must be either a string or byte slice"},
+		{"t8", "2006-01-02", "2009-01-32", "must be a valid date, ErrCode: 1102"},
+		{"t9", "2006-01-02", 1, "must be either a string or byte slice, ErrCode: 1005"},
 	}
 
 	for _, test := range tests {
@@ -60,10 +56,10 @@ func TestDateRule_MinMax(t *testing.T) {
 	assert.Nil(t, r2.Validate("2010-01-02"))
 	err := r2.Validate("1999-01-02")
 	if assert.NotNil(t, err) {
-		assert.Equal(t, "the data is out of range", err.Error())
+		assert.Equal(t, "the data is out of range, ErrCode: 1103", err.Error())
 	}
 	err2 := r2.Validate("2021-01-02")
 	if assert.NotNil(t, err) {
-		assert.Equal(t, "the data is out of range", err2.Error())
+		assert.Equal(t, "the data is out of range, ErrCode: 1103", err2.Error())
 	}
 }

@@ -1,7 +1,3 @@
-// Copyright 2016 Qiang Xue. All rights reserved.
-// Use of this source code is governed by a MIT-style
-// license that can be found in the LICENSE file.
-
 package validation
 
 import (
@@ -21,11 +17,11 @@ func TestRequired(t *testing.T) {
 		err   string
 	}{
 		{"t1", 123, ""},
-		{"t2", "", "cannot be blank"},
+		{"t2", "", "cannot be blank, ErrCode: 1202"},
 		{"t3", &s1, ""},
-		{"t4", &s2, "cannot be blank"},
-		{"t5", nil, "cannot be blank"},
-		{"t6", time1, "cannot be blank"},
+		{"t4", &s2, "cannot be blank, ErrCode: 1202"},
+		{"t5", nil, "cannot be blank, ErrCode: 1202"},
+		{"t6", time1, "cannot be blank, ErrCode: 1202"},
 	}
 
 	for _, test := range tests {
@@ -44,9 +40,9 @@ func TestNilOrNotEmpty(t *testing.T) {
 		err   string
 	}{
 		{"t1", 123, ""},
-		{"t2", "", "cannot be blank"},
+		{"t2", "", "cannot be blank, ErrCode: 1202"},
 		{"t3", &s1, ""},
-		{"t4", &s2, "cannot be blank"},
+		{"t4", &s2, "cannot be blank, ErrCode: 1202"},
 		{"t5", nil, ""},
 	}
 

@@ -1,7 +1,3 @@
-// Copyright 2016 Qiang Xue. All rights reserved.
-// Use of this source code is governed by a MIT-style
-// license that can be found in the LICENSE file.
-
 package validation
 
 import (
@@ -32,6 +28,9 @@ func (e *externalError) ExternalError() error {
 }
 
 func (e *externalError) Error() string {
+	if e.GetCode() == 0 {
+		return fmt.Sprintf("%v", e.error)
+	}
 	return fmt.Sprintf("%v, ErrCode: %v", e.error, e.GetCode())
 }
 
@@ -62,8 +61,8 @@ func (es Errors) Error() string {
 		if i > 0 {
 			s += "; "
 		}
-		if errs, ok := es[key].(ExternalError); ok {
-			s += fmt.Sprintf("%v: %v, ErrCode: %v", key, errs.Error(), errs.GetCode())
+		if errs, ok := es[key].(Errors); ok {
+			s += fmt.Sprintf("%v: %v", key, errs.Error())
 		} else {
 			s += fmt.Sprintf("%v: %v", key, es[key].Error())
 		}
@@ -87,8 +86,8 @@ func (es Errors) ExternalError() error {
 		if i > 0 {
 			s += "; "
 		}
-		if errs, ok := es[key].(ExternalError); ok {
-			s += fmt.Sprintf("%v: %v, ErrCode: %v", key, errs.Error(), errs.GetCode())
+		if errs, ok := es[key].(Errors); ok {
+			s += fmt.Sprintf("%v: (%v)", key, errs)
 		} else {
 			s += fmt.Sprintf("%v: %v", key, es[key].Error())
 		}

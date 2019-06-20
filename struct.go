@@ -1,7 +1,3 @@
-// Copyright 2016 Qiang Xue. All rights reserved.
-// Use of this source code is governed by a MIT-style
-// license that can be found in the LICENSE file.
-
 package validation
 
 import (
@@ -56,24 +52,6 @@ func (e ErrFieldNotFound) ExternalError() error {
 	return errors.New(e.Error())
 }
 
-// ValidateStruct validates a struct by checking the specified struct fields against the corresponding validation rules.
-// Note that the struct being validated must be specified as a pointer to it. If the pointer is nil, it is considered valid.
-// Use Field() to specify struct fields that need to be validated. Each Field() call specifies a single field which
-// should be specified as a pointer to the field. A field can be associated with multiple rules.
-// For example,
-//
-//    value := struct {
-//        Name  string
-//        Value string
-//    }{"name", "demo"}
-//    err := validation.ValidateStruct(&value,
-//         validation.Field(&a.Name, validation.Required),
-//         validation.Field(&a.Value, validation.Required, validation.Length(5, 10)),
-//    )
-//    fmt.Println(err)
-//    // Value: the length must be between 5 and 10.
-//
-// An error will be returned if validation fails.
 func ValidateStruct(structPtr interface{}, fields ...*FieldRules) ExternalError {
 	value := reflect.ValueOf(structPtr)
 	if value.Kind() != reflect.Ptr || !value.IsNil() && value.Elem().Kind() != reflect.Struct {

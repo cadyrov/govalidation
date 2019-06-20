@@ -1,7 +1,3 @@
-// Copyright 2016 Qiang Xue. All rights reserved.
-// Use of this source code is governed by a MIT-style
-// license that can be found in the LICENSE file.
-
 package validation
 
 import (
@@ -22,9 +18,9 @@ func TestIn(t *testing.T) {
 		{"t0", []interface{}{1, 2}, 0, ""},
 		{"t1", []interface{}{1, 2}, 1, ""},
 		{"t2", []interface{}{1, 2}, 2, ""},
-		{"t3", []interface{}{1, 2}, 3, "must be a valid value"},
-		{"t4", []interface{}{}, 3, "must be a valid value"},
-		{"t5", []interface{}{1, 2}, "1", "must be a valid value"},
+		{"t3", []interface{}{1, 2}, 3, "must be a valid value, ErrCode: 1101"},
+		{"t4", []interface{}{}, 3, "must be a valid value, ErrCode: 1101"},
+		{"t5", []interface{}{1, 2}, "1", "must be a valid value, ErrCode: 1101"},
 		{"t6", []interface{}{1, 2}, &v, ""},
 		{"t7", []interface{}{1, 2}, v2, ""},
 	}

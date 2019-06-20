@@ -1,7 +1,3 @@
-// Copyright 2016 Qiang Xue. All rights reserved.
-// Use of this source code is governed by a MIT-style
-// license that can be found in the LICENSE file.
-
 package validation
 
 import (
@@ -64,18 +60,18 @@ func TestStringValidator_Validate(t *testing.T) {
 
 	err = v.Validate("not me")
 	if assert.NotNil(t, err) {
-		assert.Equal(t, "wrong", err.Error())
+		assert.Equal(t, "wrong, ErrCode: 3035", err.Error())
 	}
 
 	err = v.Validate(100)
 	if assert.NotNil(t, err) {
-		assert.NotEqual(t, "wrong", err.Error())
+		assert.NotEqual(t, "wrong, ErrCode: 3035", err.Error())
 	}
 
 	v2 := v.Error("Wrong!", 3035)
 	err = v2.Validate("not me")
 	if assert.NotNil(t, err) {
-		assert.Equal(t, "Wrong!", err.Error())
+		assert.Equal(t, "Wrong!, ErrCode: 3035", err.Error())
 	}
 }
 

@@ -1,7 +1,3 @@
-// Copyright 2016 Qiang Xue. All rights reserved.
-// Use of this source code is governed by a MIT-style
-// license that can be found in the LICENSE file.
-
 package validation
 
 import (
@@ -21,13 +17,13 @@ func TestLength(t *testing.T) {
 	}{
 		{"t1", 2, 4, "abc", ""},
 		{"t2", 2, 4, "", ""},
-		{"t3", 2, 4, "abcdf", "the length must be between 2 and 4"},
+		{"t3", 2, 4, "abcdf", "the length must be between 2 and 4, ErrCode: 1304"},
 		{"t4", 0, 4, "ab", ""},
-		{"t5", 0, 4, "abcde", "the length must be no more than 4"},
+		{"t5", 0, 4, "abcde", "the length must be no more than 4, ErrCode: 1301"},
 		{"t6", 2, 0, "ab", ""},
-		{"t7", 2, 0, "a", "the length must be no less than 2"},
+		{"t7", 2, 0, "a", "the length must be no less than 2, ErrCode: 1302"},
 		{"t8", 2, 0, v, ""},
-		{"t9", 2, 0, 123, "cannot get the length of int"},
+		{"t9", 2, 0, 123, "cannot get the length of int, ErrCode: 1004"},
 		{"t10", 2, 4, sql.NullString{String: "abc", Valid: true}, ""},
 		{"t11", 2, 4, sql.NullString{String: "", Valid: true}, ""},
 		{"t12", 2, 4, &sql.NullString{String: "abc", Valid: true}, ""},
@@ -51,21 +47,21 @@ func TestRuneLength(t *testing.T) {
 		{"t1", 2, 4, "abc", ""},
 		{"t1.1", 2, 3, "💥💥", ""},
 		{"t1.2", 2, 3, "💥💥💥", ""},
-		{"t1.3", 2, 3, "💥", "the length must be between 2 and 3"},
-		{"t1.4", 2, 3, "💥💥💥💥", "the length must be between 2 and 3"},
+		{"t1.3", 2, 3, "💥", "the length must be between 2 and 3, ErrCode: 1304"},
+		{"t1.4", 2, 3, "💥💥💥💥", "the length must be between 2 and 3, ErrCode: 1304"},
 		{"t2", 2, 4, "", ""},
-		{"t3", 2, 4, "abcdf", "the length must be between 2 and 4"},
+		{"t3", 2, 4, "abcdf", "the length must be between 2 and 4, ErrCode: 1304"},
 		{"t4", 0, 4, "ab", ""},
-		{"t5", 0, 4, "abcde", "the length must be no more than 4"},
+		{"t5", 0, 4, "abcde", "the length must be no more than 4, ErrCode: 1301"},
 		{"t6", 2, 0, "ab", ""},
-		{"t7", 2, 0, "a", "the length must be no less than 2"},
+		{"t7", 2, 0, "a", "the length must be no less than 2, ErrCode: 1302"},
 		{"t8", 2, 0, v, ""},
-		{"t9", 2, 0, 123, "cannot get the length of int"},
+		{"t9", 2, 0, 123, "cannot get the length of int, ErrCode: 1004"},
 		{"t10", 2, 4, sql.NullString{String: "abc", Valid: true}, ""},
 		{"t11", 2, 4, sql.NullString{String: "", Valid: true}, ""},
 		{"t12", 2, 4, &sql.NullString{String: "abc", Valid: true}, ""},
 		{"t13", 2, 3, &sql.NullString{String: "💥💥", Valid: true}, ""},
-		{"t14", 2, 3, &sql.NullString{String: "💥", Valid: true}, "the length must be between 2 and 3"},
+		{"t14", 2, 3, &sql.NullString{String: "💥", Valid: true}, "the length must be between 2 and 3, ErrCode: 1304"},
 	}
 
 	for _, test := range tests {

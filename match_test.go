@@ -1,7 +1,3 @@
-// Copyright 2016 Qiang Xue. All rights reserved.
-// Use of this source code is governed by a MIT-style
-// license that can be found in the LICENSE file.
-
 package validation
 
 import (
@@ -22,9 +18,9 @@ func TestMatch(t *testing.T) {
 		{"t1", "[a-z]+", "abc", ""},
 		{"t2", "[a-z]+", "", ""},
 		{"t3", "[a-z]+", v2, ""},
-		{"t4", "[a-z]+", "123", "must be in a valid format"},
+		{"t4", "[a-z]+", "123", "must be in a valid format, ErrCode: 1105"},
 		{"t5", "[a-z]+", []byte("abc"), ""},
-		{"t6", "[a-z]+", []byte("123"), "must be in a valid format"},
+		{"t6", "[a-z]+", []byte("123"), "must be in a valid format, ErrCode: 1105"},
 		{"t7", "[a-z]+", []byte(""), ""},
 		{"t8", "[a-z]+", nil, ""},
 	}
