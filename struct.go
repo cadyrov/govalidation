@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"strconv"
 	"strings"
 )
 
@@ -33,12 +32,11 @@ type (
 
 // Error returns the error string of ErrFieldPointer.
 func (e ErrFieldPointer) Error() string {
-	i, _ := strconv.Atoi(e.GetCode())
-	return fmt.Sprintf(MsgByCode(i), int(e))
+	return fmt.Sprintf(MsgByCode(e.GetCode()), int(e))
 }
 
-func (e ErrFieldPointer) GetCode() string {
-	return "1002"
+func (e ErrFieldPointer) GetCode() int {
+	return 1002
 }
 
 func (e ErrFieldPointer) ExternalError() error {
@@ -47,12 +45,12 @@ func (e ErrFieldPointer) ExternalError() error {
 
 // Error returns the error string of ErrFieldNotFound.
 func (e ErrFieldNotFound) Error() string {
-	i, _ := strconv.Atoi(e.GetCode())
-	return fmt.Sprintf(MsgByCode(i), int(e))
+
+	return fmt.Sprintf(MsgByCode(e.GetCode()), int(e))
 }
 
-func (e ErrFieldNotFound) GetCode() string {
-	return "1003"
+func (e ErrFieldNotFound) GetCode() int {
+	return 1003
 }
 func (e ErrFieldNotFound) ExternalError() error {
 	return errors.New(e.Error())

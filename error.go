@@ -15,7 +15,7 @@ type (
 	ExternalError interface {
 		error
 		ExternalError() error
-		GetCode() string
+		GetCode() int
 	}
 
 	externalError struct {
@@ -58,8 +58,8 @@ func NewExternalError(err error, code int) ExternalError {
 }
 
 // InternalError returns the actual error that it wraps around.
-func (e *externalError) GetCode() string {
-	return fmt.Sprint(e.code)
+func (e *externalError) GetCode() int {
+	return e.code
 }
 
 // Error returns the error string of Errors.
@@ -80,7 +80,7 @@ func (es Errors) Error() string {
 			s += "; "
 		}
 		if errs, ok := es[key].(ExternalError); ok {
-			s += fmt.Sprintf("%v: %v || ErrCode: %v", key, errs.Error(), errs.GetCode())
+			s += fmt.Sprintf("%v: %v, ErrCode: %v", key, errs.Error(), errs.GetCode())
 		} else {
 			s += fmt.Sprintf("%v: %v", key, es[key].Error())
 		}
@@ -105,7 +105,7 @@ func (es Errors) ExternalError() error {
 			s += "; "
 		}
 		if errs, ok := es[key].(ExternalError); ok {
-			s += fmt.Sprintf("%v: (%v)", key, errs)
+			s += fmt.Sprintf("%v: %v, ErrCode: %v", key, errs.Error(), errs.GetCode())
 		} else {
 			s += fmt.Sprintf("%v: %v", key, es[key].Error())
 		}
@@ -113,9 +113,9 @@ func (es Errors) ExternalError() error {
 	return errors.New(s)
 }
 
-func (es Errors) GetCode() string {
+func (es Errors) GetCode() int {
 	if len(es) == 0 {
-		return ""
+		return 0
 	}
 
 	keys := []string{}
@@ -130,12 +130,12 @@ func (es Errors) GetCode() string {
 			s += "; "
 		}
 		if errs, ok := es[key].(ExternalError); ok {
-			s += fmt.Sprintf("%v: (%v)", key, errs)
+			s += fmt.Sprintf("%v: (%v)", key, errs.GetCode())
 		} else {
 			s += fmt.Sprintf("%v: %v", key, es[key].Error())
 		}
 	}
-	return s + "."
+	return 0
 }
 
 // MarshalJSON converts the Errors into a valid JSON.
