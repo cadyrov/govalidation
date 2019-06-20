@@ -14,6 +14,10 @@ type (
 		GetCode() int
 	}
 
+	jsonError struct {
+		ErrCode int    `json:"errCode"`
+		Err     string `json:"error"`
+	}
 	externalError struct {
 		code int
 		error
@@ -62,7 +66,7 @@ func (es Errors) Error() string {
 			s += "; "
 		}
 		if errs, ok := es[key].(Errors); ok {
-			s += fmt.Sprintf("%v: %v", key, errs.Error())
+			s += fmt.Sprintf("%v: (%v)", key, errs.Error())
 		} else {
 			s += fmt.Sprintf("%v: %v", key, es[key].Error())
 		}
@@ -124,10 +128,11 @@ func (es Errors) GetCode() int {
 func (es Errors) MarshalJSON() ([]byte, error) {
 	errs := map[string]interface{}{}
 	for key, err := range es {
+
 		if ms, ok := err.(json.Marshaler); ok {
 			errs[key] = ms
 		} else {
-			errs[key] = err.Error()
+			errs[key] = jsonError{Err: err.ExternalError().Error(), ErrCode: err.GetCode()}
 		}
 	}
 	return json.Marshal(errs)

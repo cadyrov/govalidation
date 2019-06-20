@@ -35,6 +35,10 @@ func (e ErrFieldPointer) GetCode() int {
 	return 1002
 }
 
+func (e ErrFieldPointer) GetError() error {
+	return errors.New(e.Error())
+}
+
 func (e ErrFieldPointer) ExternalError() error {
 	return errors.New(e.Error())
 }
@@ -49,6 +53,10 @@ func (e ErrFieldNotFound) GetCode() int {
 	return 1003
 }
 func (e ErrFieldNotFound) ExternalError() error {
+	return errors.New(e.Error())
+}
+
+func (e ErrFieldNotFound) GetError() error {
 	return errors.New(e.Error())
 }
 
@@ -76,9 +84,7 @@ func ValidateStruct(structPtr interface{}, fields ...*FieldRules) ExternalError 
 			return ErrFieldNotFound(i)
 		}
 		if err := Validate(fv.Elem().Interface(), fr.rules...); err != nil {
-			if ie, ok := err.(ExternalError); ok && ie.ExternalError() != nil {
-				return err
-			}
+
 			if ft.Anonymous {
 				// merge errors from anonymous struct field
 				if es, ok := err.(Errors); ok {

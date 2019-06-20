@@ -9,8 +9,8 @@ import (
 
 func TestNewExternalError(t *testing.T) {
 	err := NewExternalError(errors.New("abc"), 4545)
-	if assert.NotNil(t, err.ExternalError()) {
-		assert.Equal(t, "abc, ErrCode: 4545", err.ExternalError().Error())
+	if assert.NotNil(t, err) {
+		assert.Equal(t, "abc, ErrCode: 4545", err.Error())
 	}
 }
 
@@ -40,7 +40,7 @@ func TestErrors_MarshalMessage(t *testing.T) {
 	}
 	errsJSON, err := errs.MarshalJSON()
 	assert.Nil(t, err)
-	assert.Equal(t, "{\"A\":\"A1\",\"B\":{\"2\":\"B1\"}}", string(errsJSON))
+	assert.Equal(t, "{\"A\":{\"errCode\":1,\"error\":\"A1\"},\"B\":{\"2\":{\"errCode\":2,\"error\":\"B1\"}}}", string(errsJSON))
 }
 
 func TestErrors_Filter(t *testing.T) {

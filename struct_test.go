@@ -1,3 +1,7 @@
+// Copyright 2016 Qiang Xue. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 package validation
 
 import (
@@ -98,9 +102,9 @@ func TestValidateStruct(t *testing.T) {
 		{"t7.4", &m2, []*FieldRules{Field(&m2.E, NotNil, Skip)}, ""},
 		// embedded structs
 		{"t8.1", &m3, []*FieldRules{Field(&m3.M3, Skip)}, ""},
-		{"t8.2", &m3, []*FieldRules{Field(&m3.M3)}, "M3: (A: error abc.)."},
+		{"t8.2", &m3, []*FieldRules{Field(&m3.M3)}, "M3: (A: error abc, ErrCode: 4000.)."},
 		{"t8.3", &m3, []*FieldRules{Field(&m3.Model3, Skip)}, ""},
-		{"t8.4", &m3, []*FieldRules{Field(&m3.Model3)}, "A: error abc, ErrCode: 1201."},
+		{"t8.4", &m3, []*FieldRules{Field(&m3.Model3)}, "A: error abc, ErrCode: 4000."},
 		{"t8.5", &m4, []*FieldRules{Field(&m4.M3)}, ""},
 		{"t8.6", &m4, []*FieldRules{Field(&m4.Model3)}, ""},
 		{"t8.7", &m3, []*FieldRules{Field(&m3.A, Required), Field(&m3.B, Required)}, "A: cannot be blank, ErrCode: 1202; B: cannot be blank, ErrCode: 1202."},
@@ -116,7 +120,7 @@ func TestValidateStruct(t *testing.T) {
 	// embedded struct
 	err := Validate(&m3)
 	if assert.NotNil(t, err) {
-		assert.Equal(t, "A: error abc.", err.Error())
+		assert.Equal(t, "A: error abc, ErrCode: 4000.", err.Error())
 	}
 
 	a := struct {

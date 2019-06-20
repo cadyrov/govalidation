@@ -28,9 +28,7 @@ func TestValidate(t *testing.T) {
 	}
 	for _, test := range tests {
 		err := Validate(test.value)
-
 		assertError(t, test.err, err, test.tag)
-
 	}
 
 	// with rules
@@ -119,9 +117,9 @@ type Model1 struct {
 
 type String123 string
 
-func (s String123) Validate() error {
+func (s String123) Validate() ExternalError {
 	if !strings.Contains(string(s), "123") {
-		return errors.New("error 123")
+		return NewExternalError(errors.New("error 123"), 5000)
 	}
 	return nil
 }
@@ -136,7 +134,7 @@ type Model3 struct {
 	A string
 }
 
-func (m Model3) Validate() error {
+func (m Model3) Validate() ExternalError {
 	return ValidateStruct(&m,
 		Field(&m.A, &validateAbc{}),
 	)

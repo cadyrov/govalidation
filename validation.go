@@ -55,9 +55,11 @@ func Validate(value interface{}, rules ...Rule) ExternalError {
 	if (rv.Kind() == reflect.Ptr || rv.Kind() == reflect.Interface) && rv.IsNil() {
 		return nil
 	}
-
 	if v, ok := value.(Validatable); ok {
-		return NewExternalError(v.Validate(), 0)
+		if err := v.Validate(); err != nil {
+			return NewExternalError(err, 0)
+		}
+		return nil
 	}
 
 	switch rv.Kind() {
@@ -72,7 +74,6 @@ func Validate(value interface{}, rules ...Rule) ExternalError {
 	case reflect.Ptr, reflect.Interface:
 		return Validate(rv.Elem().Interface())
 	}
-
 	return nil
 }
 
