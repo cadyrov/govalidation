@@ -11,7 +11,7 @@ func TestSnils(t *testing.T) {
 
 	for i, val := range slInt {
 		vl := val
-		err := validation.Validate(vl)
+		err := validation.Validate(vl, Snils)
 		if i == (len(slInt) - 1) {
 			if err != nil {
 				t.Fatal(err.Error())

@@ -18,12 +18,12 @@ func TestValidate(t *testing.T) {
 	}{
 		{"t1", 123, ""},
 		{"t2", String123("123"), ""},
-		{"t3", String123("abc"), "error 123"},
+		{"t3", String123("abc"), "error 123, ErrCode: 5000"},
 		{"t4", []String123{}, ""},
-		{"t5", slice, "0: error 123; 2: error 123."},
-		{"t6", &slice, "0: error 123; 2: error 123."},
-		{"t7", mp, "a: error 123; c: error 123."},
-		{"t8", &mp, "a: error 123; c: error 123."},
+		{"t5", slice, "0: error 123, ErrCode: 5000; 2: error 123, ErrCode: 5000."},
+		{"t6", &slice, "0: error 123, ErrCode: 5000; 2: error 123, ErrCode: 5000."},
+		{"t7", mp, "a: error 123, ErrCode: 5000; c: error 123, ErrCode: 5000."},
+		{"t8", &mp, "a: error 123, ErrCode: 5000; c: error 123, ErrCode: 5000."},
 		{"t9", map[string]String123{}, ""},
 	}
 	for _, test := range tests {

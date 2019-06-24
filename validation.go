@@ -11,7 +11,7 @@ type (
 	// Validatable is the interface indicating the type implementing it supports data validation.
 	Validatable interface {
 		// Validate validates the data and returns an error if validation fails.
-		Validate() error
+		Validate() ExternalError
 	}
 
 	// Rule represents a validation rule.
