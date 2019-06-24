@@ -66,7 +66,7 @@ func (es Errors) Error() string {
 			s += "; "
 		}
 		if errs, ok := es[key].(Errors); ok {
-			s += fmt.Sprintf("%v: (%v)", key, errs.Error())
+			s += fmt.Sprintf("%v: (%v)", key, errs.ExternalError().Error())
 		} else {
 			s += fmt.Sprintf("%v: %v", key, es[key].Error())
 		}
