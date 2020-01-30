@@ -59,7 +59,7 @@ func (r *ThresholdRule) Exclusive() *ThresholdRule {
 }
 
 // Validate checks if the given value is valid or not.
-func (r *ThresholdRule) Validate(value interface{}) error {
+func (r *ThresholdRule) Validate(value interface{}) ExternalError {
 	value, isNil := Indirect(value)
 	if isNil || IsEmpty(value) {
 		return nil
@@ -70,7 +70,7 @@ func (r *ThresholdRule) Validate(value interface{}) error {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		v, err := ToInt(value)
 		if err != nil {
-			return err
+			return NewExternalError(err, 1000)
 		}
 		if r.compareInt(rv.Int(), v) {
 			return nil
@@ -79,7 +79,7 @@ func (r *ThresholdRule) Validate(value interface{}) error {
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
 		v, err := ToUint(value)
 		if err != nil {
-			return err
+			return NewExternalError(err, 1000)
 		}
 		if r.compareUint(rv.Uint(), v) {
 			return nil
@@ -88,7 +88,7 @@ func (r *ThresholdRule) Validate(value interface{}) error {
 	case reflect.Float32, reflect.Float64:
 		v, err := ToFloat(value)
 		if err != nil {
-			return err
+			return NewExternalError(err, 1000)
 		}
 		if r.compareFloat(rv.Float(), v) {
 			return nil
@@ -97,21 +97,21 @@ func (r *ThresholdRule) Validate(value interface{}) error {
 	case reflect.Struct:
 		t, ok := r.threshold.(time.Time)
 		if !ok {
-			return fmt.Errorf("type not supported: %v", rv.Type())
+			return NewExternalError(fmt.Errorf("type not supported: %v", rv.Type()), 1000)
 		}
 		v, ok := value.(time.Time)
 		if !ok {
-			return fmt.Errorf("cannot convert %v to time.Time", reflect.TypeOf(value))
+			return NewExternalError(fmt.Errorf("cannot convert %v to time.Time", reflect.TypeOf(value)), 1000)
 		}
 		if v.IsZero() || r.compareTime(t, v) {
 			return nil
 		}
 
 	default:
-		return fmt.Errorf("type not supported: %v", rv.Type())
+		return NewExternalError(fmt.Errorf("type not supported: %v", rv.Type()), 1000)
 	}
 
-	return errors.New(r.message)
+	return NewExternalError(errors.New(r.message), 1000)
 }
 
 // Error sets the error message for the rule.
