@@ -69,12 +69,34 @@ func (r *ThresholdRule) Validate(value interface{}) ExternalError {
 	rv := reflect.ValueOf(r.threshold)
 	switch rv.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		v, err := ToInt(value)
-		if err != nil {
-			return NewExternalError(err, 1000)
-		}
-		if r.compareInt(rv.Int(), v) {
-			return nil
+		if sliceHeaders, ok := value.([]multipart.FileHeader); ok {
+			var sum int64
+			for i := range sliceHeaders {
+				sum += sliceHeaders[i].Size
+			}
+			v, err := ToUint(sum)
+			if err != nil {
+				return NewExternalError(err, 1000)
+			}
+			if r.compareUint(rv.Uint(), v) {
+				return nil
+			}
+		} else if header, ok := value.(multipart.FileHeader); ok {
+			v, err := ToUint(header.Size)
+			if err != nil {
+				return NewExternalError(err, 1000)
+			}
+			if r.compareUint(rv.Uint(), v) {
+				return nil
+			}
+		} else {
+			v, err := ToInt(value)
+			if err != nil {
+				return NewExternalError(err, 1000)
+			}
+			if r.compareInt(rv.Int(), v) {
+				return nil
+			}
 		}
 
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
@@ -109,31 +131,8 @@ func (r *ThresholdRule) Validate(value interface{}) ExternalError {
 		}
 
 	default:
-		sliceHeaders, ok := value.([]multipart.FileHeader)
-		if ok {
-			var sum int64
-			for i := range sliceHeaders {
-				sum += sliceHeaders[i].Size
-			}
-			v, err := ToUint(sum)
-			if err != nil {
-				return NewExternalError(err, 1000)
-			}
-			if r.compareUint(rv.Uint(), v) {
-				return nil
-			}
-		}
-		header, ok := value.(multipart.FileHeader)
-		if ok {
-			v, err := ToUint(header.Size)
-			if err != nil {
-				return NewExternalError(err, 1000)
-			}
-			if r.compareUint(rv.Uint(), v) {
-				return nil
-			}
-		}
 		return NewExternalError(fmt.Errorf("type not supported: %v", rv.Type()), 1000)
+
 	}
 
 	return NewExternalError(errors.New(r.message), 1000)
