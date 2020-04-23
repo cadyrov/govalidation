@@ -110,20 +110,30 @@ func (r *ThresholdRule) Validate(value interface{}) ExternalError {
 
 	default:
 		sliceHeaders, ok := value.([]multipart.FileHeader)
-		if !ok {
-			return NewExternalError(fmt.Errorf("type not supported: %v", rv.Type()), 1000)
+		if ok {
+			var sum int64
+			for i := range sliceHeaders {
+				sum += sliceHeaders[i].Size
+			}
+			v, err := ToUint(sum)
+			if err != nil {
+				return NewExternalError(err, 1000)
+			}
+			if r.compareUint(rv.Uint(), v) {
+				return nil
+			}
 		}
-		var sum int64
-		for i := range sliceHeaders {
-			sum += sliceHeaders[i].Size
+		header, ok := value.(multipart.FileHeader)
+		if ok {
+			v, err := ToUint(header.Size)
+			if err != nil {
+				return NewExternalError(err, 1000)
+			}
+			if r.compareUint(rv.Uint(), v) {
+				return nil
+			}
 		}
-		v, err := ToUint(sum)
-		if err != nil {
-			return NewExternalError(err, 1000)
-		}
-		if r.compareUint(rv.Uint(), v) {
-			return nil
-		}
+		return NewExternalError(fmt.Errorf("type not supported: %v", rv.Type()), 1000)
 	}
 
 	return NewExternalError(errors.New(r.message), 1000)
