@@ -3,6 +3,7 @@ package validation
 import (
 	"errors"
 	"fmt"
+	"mime/multipart"
 	"reflect"
 	"time"
 )
@@ -108,7 +109,21 @@ func (r *ThresholdRule) Validate(value interface{}) ExternalError {
 		}
 
 	default:
-		return NewExternalError(fmt.Errorf("type not supported: %v", rv.Type()), 1000)
+		sliceHeaders, ok := value.([]multipart.FileHeader)
+		if !ok {
+			return NewExternalError(fmt.Errorf("type not supported: %v", rv.Type()), 1000)
+		}
+		var sum int64
+		for i := range sliceHeaders {
+			sum += sliceHeaders[i].Size
+		}
+		v, err := ToUint(sum)
+		if err != nil {
+			return NewExternalError(err, 1000)
+		}
+		if r.compareUint(rv.Uint(), v) {
+			return nil
+		}
 	}
 
 	return NewExternalError(errors.New(r.message), 1000)
