@@ -69,10 +69,11 @@ func (r *ThresholdRule) Validate(value interface{}) ExternalError {
 	rv := reflect.ValueOf(r.threshold)
 	switch rv.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		if sliceHeaders, ok := value.([]multipart.FileHeader); ok {
+		slicePtrHeaders, ok := value.([]*multipart.FileHeader)
+		if ok {
 			var sum int64
-			for i := range sliceHeaders {
-				sum += sliceHeaders[i].Size
+			for i := range slicePtrHeaders {
+				sum += slicePtrHeaders[i].Size
 			}
 			v, err := ToUint(sum)
 			if err != nil {
@@ -81,15 +82,8 @@ func (r *ThresholdRule) Validate(value interface{}) ExternalError {
 			if r.compareUint(rv.Uint(), v) {
 				return nil
 			}
-		} else if header, ok := value.(multipart.FileHeader); ok {
-			v, err := ToUint(header.Size)
-			if err != nil {
-				return NewExternalError(err, 1000)
-			}
-			if r.compareUint(rv.Uint(), v) {
-				return nil
-			}
-		} else {
+		}
+		if !ok {
 			v, err := ToInt(value)
 			if err != nil {
 				return NewExternalError(err, 1000)
