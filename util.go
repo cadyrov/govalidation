@@ -2,7 +2,6 @@ package validation
 
 import (
 	"database/sql/driver"
-	"errors"
 	"fmt"
 	"reflect"
 	"time"
@@ -16,15 +15,15 @@ var (
 // EnsureString ensures the given value is a string.
 // If the value is a byte slice, it will be typecast into a string.
 // An error is returned otherwise.
-func EnsureString(value interface{}) (string, ExternalError) {
+func EnsureString(value interface{}) (string, int) {
 	v := reflect.ValueOf(value)
 	if v.Kind() == reflect.String {
-		return v.String(), nil
+		return v.String(), 0
 	}
 	if v.Type() == bytesType {
-		return string(v.Interface().([]byte)), nil
+		return string(v.Interface().([]byte)), 0
 	}
-	return "", NewExternalError(errors.New(MsgByCode(1005)), 1005)
+	return "", 1005
 }
 
 // StringOrBytes typecasts a value into a string or byte slice.
@@ -43,13 +42,13 @@ func StringOrBytes(value interface{}) (isString bool, str string, isBytes bool, 
 
 // LengthOfValue returns the length of a value that is a string, slice, map, or array.
 // An error is returned for all other types.
-func LengthOfValue(value interface{}) (int, ExternalError) {
+func LengthOfValue(value interface{}) (int, int) {
 	v := reflect.ValueOf(value)
 	switch v.Kind() {
 	case reflect.String, reflect.Slice, reflect.Map, reflect.Array:
-		return v.Len(), nil
+		return v.Len(), 0
 	}
-	return 0, NewExternalError(fmt.Errorf(MsgByCode(1004), v.Kind()), 1004)
+	return 0, 1005
 }
 
 // ToInt converts the given value to an int64.

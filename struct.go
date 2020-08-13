@@ -1,15 +1,14 @@
 package validation
 
 import (
-	"errors"
-	"fmt"
+	"github.com/cadyrov/goerr"
 	"reflect"
 	"strings"
 )
 
 var (
 	// ErrStructPointer is the error that a struct being validated is not specified as a pointer.
-	ErrStructPointer = NewExternalError(errors.New(MsgByCode(1001)), 1001)
+	ErrStructPointer = NewGoerr(1001)
 )
 
 type (
@@ -27,40 +26,16 @@ type (
 )
 
 // Error returns the error string of ErrFieldPointer.
-func (e ErrFieldPointer) Error() string {
-	return fmt.Sprintf(MsgByCode(e.GetCode()), int(e))
-}
 
 func (e ErrFieldPointer) GetCode() int {
 	return 1002
 }
 
-func (e ErrFieldPointer) GetError() error {
-	return errors.New(e.Error())
-}
-
-func (e ErrFieldPointer) ExternalError() error {
-	return errors.New(e.Error())
-}
-
-// Error returns the error string of ErrFieldNotFound.
-func (e ErrFieldNotFound) Error() string {
-
-	return fmt.Sprintf(MsgByCode(e.GetCode()), int(e))
-}
-
 func (e ErrFieldNotFound) GetCode() int {
 	return 1003
 }
-func (e ErrFieldNotFound) ExternalError() error {
-	return errors.New(e.Error())
-}
 
-func (e ErrFieldNotFound) GetError() error {
-	return errors.New(e.Error())
-}
-
-func ValidateStruct(structPtr interface{}, fields ...*FieldRules) ExternalError {
+func ValidateStruct(structPtr interface{}, fields ...*FieldRules) goerr.IError {
 	value := reflect.ValueOf(structPtr)
 	if value.Kind() != reflect.Ptr || !value.IsNil() && value.Elem().Kind() != reflect.Struct {
 		// must be a pointer to a struct
@@ -72,33 +47,32 @@ func ValidateStruct(structPtr interface{}, fields ...*FieldRules) ExternalError 
 	}
 	value = value.Elem()
 
-	errs := Errors{}
+	errs := NewErrStack()
 
-	for i, fr := range fields {
+	for _, fr := range fields {
 		fv := reflect.ValueOf(fr.fieldPtr)
 		if fv.Kind() != reflect.Ptr {
-			return ErrFieldPointer(i)
+			return NewGoerr(1002)
 		}
 		ft := findStructField(value, fv)
 		if ft == nil {
-			return ErrFieldNotFound(i)
+			return NewGoerr(1003)
 		}
 		if err := Validate(fv.Elem().Interface(), fr.rules...); err != nil {
-
 			if ft.Anonymous {
 				// merge errors from anonymous struct field
-				if es, ok := err.(Errors); ok {
-					for name, value := range es {
-						errs[name] = value
+				if es, ok := err.(ErrStack); ok {
+					for name, value := range es.Stack {
+						errs.Stack[name] = value
 					}
 					continue
 				}
 			}
-			errs[getErrorFieldName(ft)] = err
+			errs.Stack[getErrorFieldName(ft)] = err
 		}
 	}
 
-	if len(errs) > 0 {
+	if len(errs.Stack) > 0 {
 		return errs
 	}
 	return nil

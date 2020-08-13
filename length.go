@@ -1,8 +1,6 @@
 package validation
 
 import (
-	"errors"
-	"fmt"
 	"unicode/utf8"
 )
 
@@ -11,29 +9,22 @@ import (
 // This rule should only be used for validating strings, slices, maps, and arrays.
 // An empty value is considered valid. Use the Required rule to make sure a value is not empty.
 func Length(min, max int) *LengthRule {
-
-	message := "the value must be empty"
 	code := 1104
 	if min == 0 && max > 0 {
 		code = 1301
-		message = fmt.Sprintf(MsgByCode(code), max)
 	} else if min > 0 && max == 0 {
 		code = 1302
-		message = fmt.Sprintf(MsgByCode(code), min)
 	} else if min > 0 && max > 0 {
 		if min == max {
 			code = 1303
-			message = fmt.Sprintf(MsgByCode(code), min)
 		} else {
 			code = 1304
-			message = fmt.Sprintf(MsgByCode(code), min, max)
 		}
 	}
 	return &LengthRule{
-		min:     min,
-		max:     max,
-		message: message,
-		code:    code,
+		min:  min,
+		max:  max,
+		code: code,
 	}
 }
 
@@ -56,26 +47,23 @@ type LengthRule struct {
 }
 
 // Validate checks if the given value is valid or not.
-func (v *LengthRule) Validate(value interface{}) ExternalError {
+func (v *LengthRule) Validate(value interface{}) (code int, args []interface{}) {
 	value, isNil := Indirect(value)
 	if isNil || IsEmpty(value) {
-		return nil
+		return
 	}
 
-	var (
-		l   int
-		err ExternalError
-	)
+	var l int
 	if s, ok := value.(string); ok && v.rune {
 		l = utf8.RuneCountInString(s)
-	} else if l, err = LengthOfValue(value); err != nil {
-		return err
+	} else if l, code = LengthOfValue(value); code != 0 {
+		return
 	}
 
 	if v.min > 0 && l < v.min || v.max > 0 && l > v.max {
-		return NewExternalError(errors.New(v.message), v.code)
+		code = v.code
 	}
-	return nil
+	return
 }
 
 // Error sets the error message for the rule.

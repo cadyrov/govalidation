@@ -1,7 +1,6 @@
 package validation
 
 import (
-	"errors"
 	"fmt"
 	"mime/multipart"
 	"reflect"
@@ -60,10 +59,10 @@ func (r *ThresholdRule) Exclusive() *ThresholdRule {
 }
 
 // Validate checks if the given value is valid or not.
-func (r *ThresholdRule) Validate(value interface{}) ExternalError {
+func (r *ThresholdRule) Validate(value interface{}) (code int, args []interface{}) {
 	value, isNil := Indirect(value)
 	if isNil || IsEmpty(value) {
-		return nil
+		return
 	}
 
 	rv := reflect.ValueOf(r.threshold)
@@ -78,7 +77,7 @@ func (r *ThresholdRule) Validate(value interface{}) ExternalError {
 				sum += slicePtrHeaders[i].Size
 			}
 			if r.compareInt(rv.Int(), sum) {
-				return nil
+				return
 			}
 		}
 		sliceHeaders, ok := value.([]multipart.FileHeader)
@@ -89,76 +88,76 @@ func (r *ThresholdRule) Validate(value interface{}) ExternalError {
 				sum += sliceHeaders[i].Size
 			}
 			if r.compareInt(rv.Int(), sum) {
-				return nil
+				return
 			}
 		}
 		ptrHeader, ok := value.(*multipart.FileHeader)
 		if ok {
 			checkInt = false
 			if r.compareInt(rv.Int(), ptrHeader.Size) {
-				return nil
+				return
 			}
 		}
 		header, ok := value.(multipart.FileHeader)
 		if ok {
 			checkInt = false
 			if r.compareInt(rv.Int(), header.Size) {
-				return nil
+				return
 			}
 		}
 		if checkInt == true {
 			v, err := ToInt(value)
 			if err != nil {
-				return NewExternalError(err, 1000)
+				code = 1000
+				return
 			}
 			if r.compareInt(rv.Int(), v) {
-				return nil
+				return
 			}
 		}
 
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
 		v, err := ToUint(value)
 		if err != nil {
-			return NewExternalError(err, 1000)
+			code = 1000
+			return
 		}
 		if r.compareUint(rv.Uint(), v) {
-			return nil
+			return
 		}
 
 	case reflect.Float32, reflect.Float64:
 		v, err := ToFloat(value)
 		if err != nil {
-			return NewExternalError(err, 1000)
+			code = 1000
+			return
 		}
 		if r.compareFloat(rv.Float(), v) {
-			return nil
+			return
 		}
 
 	case reflect.Struct:
 		t, ok := r.threshold.(time.Time)
 		if !ok {
-			return NewExternalError(fmt.Errorf("type not supported: %v", rv.Type()), 1000)
+			code = 1000
+			return
 		}
 		v, ok := value.(time.Time)
 		if !ok {
-			return NewExternalError(fmt.Errorf("cannot convert %v to time.Time", reflect.TypeOf(value)), 1000)
+			code = 1000
+			return
 		}
 		if v.IsZero() || r.compareTime(t, v) {
-			return nil
+			return
 		}
 
 	default:
-		return NewExternalError(fmt.Errorf("type not supported: %v", rv.Type()), 1000)
+		code = 1000
+		return
 
 	}
-
-	return NewExternalError(errors.New(r.message), 1000)
-}
-
-// Error sets the error message for the rule.
-func (r *ThresholdRule) Error(message string) *ThresholdRule {
-	r.message = message
-	return r
+	code = 1000
+	return
 }
 
 func (r *ThresholdRule) compareInt(threshold, value int64) bool {

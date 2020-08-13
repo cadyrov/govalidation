@@ -3,6 +3,8 @@ package validation
 
 import (
 	"fmt"
+	"github.com/cadyrov/goerr"
+	"net/http"
 	"reflect"
 	"strconv"
 )
@@ -11,18 +13,18 @@ type (
 	// Validatable is the interface indicating the type implementing it supports data validation.
 	Validatable interface {
 		// Validate validates the data and returns an error if validation fails.
-		Validate() ExternalError
+		Validate() (code int, args []interface{})
 	}
 
 	// Rule represents a validation rule.
 	Rule interface {
 		// Validate validates a value and returns a value if validation fails.
-		Validate(value interface{}) ExternalError
+		Validate(value interface{}) (code int, args []interface{})
 	}
 
 	// RuleFunc represents a validator function.
 	// You may wrap it as a Rule by calling By().
-	RuleFunc func(value interface{}) ExternalError
+	RuleFunc func(value interface{}) (code int, args []interface{})
 )
 
 var (
@@ -41,13 +43,13 @@ var (
 // - validate the value against the rules passed in as parameters
 // - if the value is a map and the map values implement `Validatable`, call `Validate` of every map value
 // - if the value is a slice or array whose values implement `Validatable`, call `Validate` of every element
-func Validate(value interface{}, rules ...Rule) ExternalError {
+func Validate(value interface{}, rules ...Rule) goerr.IError {
 	for _, rule := range rules {
 		if _, ok := rule.(*skipRule); ok {
 			return nil
 		}
-		if err := rule.Validate(value); err != nil {
-			return err
+		if code, args := rule.Validate(value); code != 0 {
+			return NewGoerr(code, args...)
 		}
 	}
 
@@ -56,8 +58,8 @@ func Validate(value interface{}, rules ...Rule) ExternalError {
 		return nil
 	}
 	if v, ok := value.(Validatable); ok {
-		if err := v.Validate(); err != nil {
-			return NewExternalError(err, 0)
+		if code, args := v.Validate(); code != 0 {
+			return NewGoerr(code, args...)
 		}
 		return nil
 	}
@@ -78,33 +80,35 @@ func Validate(value interface{}, rules ...Rule) ExternalError {
 }
 
 // validateMap validates a map of validatable elements
-func validateMap(rv reflect.Value) ExternalError {
-	errs := Errors{}
+func validateMap(rv reflect.Value) goerr.IError {
+	errs := NewErrStack()
 	for _, key := range rv.MapKeys() {
 		if mv := rv.MapIndex(key).Interface(); mv != nil {
-			if err := mv.(Validatable).Validate(); err != nil {
-				errs[fmt.Sprintf("%v", key.Interface())] = NewExternalError(err, 0)
+			if code, args := mv.(Validatable).Validate(); code != 0 {
+				errs.Stack[fmt.Sprintf("%v", key.Interface())] = NewGoerr(code, args)
 			}
 		}
 	}
-	if len(errs) > 0 {
+	if len(errs.Stack) > 0 {
+		errs.IError = goerr.New("").Http(http.StatusBadRequest)
 		return errs
 	}
 	return nil
 }
 
 // validateMap validates a slice/array of validatable elements
-func validateSlice(rv reflect.Value) ExternalError {
-	errs := Errors{}
+func validateSlice(rv reflect.Value) goerr.IError {
+	errs := NewErrStack()
 	l := rv.Len()
 	for i := 0; i < l; i++ {
 		if ev := rv.Index(i).Interface(); ev != nil {
-			if err := ev.(Validatable).Validate(); err != nil {
-				errs[strconv.Itoa(i)] = NewExternalError(err, 0)
+			if code, args := ev.(Validatable).Validate(); code != 0 {
+				errs.Stack[strconv.Itoa(i)] = NewGoerr(code, args)
 			}
 		}
 	}
-	if len(errs) > 0 {
+	if len(errs.Stack) > 0 {
+		errs.IError = goerr.New("").Http(http.StatusBadRequest)
 		return errs
 	}
 	return nil
@@ -112,15 +116,15 @@ func validateSlice(rv reflect.Value) ExternalError {
 
 type skipRule struct{}
 
-func (r *skipRule) Validate(interface{}) ExternalError {
-	return nil
+func (r *skipRule) Validate(interface{}) (code int, args []interface{}) {
+	return 0, nil
 }
 
 type inlineRule struct {
 	f RuleFunc
 }
 
-func (r *inlineRule) Validate(value interface{}) ExternalError {
+func (r *inlineRule) Validate(value interface{}) (code int, args []interface{}) {
 	return r.f(value)
 }
 

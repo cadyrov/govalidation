@@ -1,153 +1,130 @@
 package validation
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
-	"sort"
+	"github.com/cadyrov/goerr"
+	"net/http"
 )
 
-type (
-	ExternalError interface {
-		error
-		ExternalError() error
-		GetCode() int
-	}
+var mpErr map[int]string = map[int]string{
+	1000: "internal",
+	1001: "only_a_pointer_to_a_struct_can_be_validated",
+	1002: "field_must_be_specified_as_a_pointer",
+	1003: "field_cannot_be_found_in_the_struct",
+	1004: "cannot_get_the_length %s",
+	1005: "must_be_either_a_string_or_byte_slice",
+	1006: "type_not_supported",
 
-	jsonError struct {
-		ErrCode int    `json:"errCode"`
-		Err     string `json:"error"`
-	}
-	externalError struct {
-		code int
-		error
-	}
+	1101: "must_be_a_valid_value",
+	1102: "must_be_a_valid_date",
+	1103: "the_data_is_out_of_range",
+	1104: "the_value_must_be_empty",
+	1105: "must_be_in_a_valid_format",
+	1106: "must_be_multiple_of_%v",
+	1107: "must_not_be_in_list",
 
-	// Errors represents the validation errors that are indexed by struct field names, map or slice keys.
-	Errors map[string]ExternalError
-)
+	1201: "is_required",
+	1202: "cannot_be_blank",
 
-func (e *externalError) ExternalError() error {
-	return e.error
+	1300: "is_not_correct",
+	1301: "the_length_must_be_no_more_than_%v",
+	1302: "the_length_must_be_no_less_than_%v",
+	1303: "the_length_must_be_exactly_%v",
+	1304: "the_length_must_be_between_%v_and_%v",
+
+	1401: "must_be_a_valid_email_address",
+
+	1501: "must_contain_English_letters_only",
+	1502: "must_contain_digits_only",
+	1503: "must_contain_English_letters_and_digits_only",
+	1504: "must_contain_unicode_letter_characters_only",
+	1505: "must_contain_unicode_decimal_digits_only",
+	1506: "must_contain_unicode_letters_and_numbers_only",
+	1507: "must_contain_unicode_number_characters_only",
+
+	1601: "must_be_in_lower_case",
+	1602: "must_be_in_upper_case",
+
+	1701: "must_be_a_valid_hexadecimal_number",
+	1702: "must_be_a_valid_hexadecimal_color_code",
+	1703: "must_be_a_valid_RGB_color_code",
+
+	1801: "must_be_an_integer_number",
+	1802: "must_be_a_floating_point_number",
+
+	1901: "must_be_a_valid_UUID_v3",
+	1902: "must_be_a_valid_UUID_v4",
+	1903: "must_be_a_valid_UUID_v5",
+	1904: "must_be_a_valid_UUID",
+
+	2001: "must_be_a_valid_credit_card_number",
+	2002: "must_be_a_valid_ISBN_10",
+	2003: "must_be_a_valid_ISBN_13",
+	2004: "must_be_a_valid_ISBN",
+
+	2101: "must_be_in_valid_JSON_format",
+
+	2201: "must_contain_ASCII_characters_only",
+	2202: "must_contain_printable_ASCII_characters_only",
+	2203: "must_contain_multibyte_characters",
+	2204: "must_contain_full_width_characters",
+	2205: "must_contain_half_width_characters",
+	2206: "must_contain_both_full_width_and_half_width_characters",
+	2207: "must_be_encoded_in_Base64",
+	2208: "must_be_a_Base64_encoded_data_URI",
+
+	2301: "must_be_a_valid_E164_number",
+	2302: "must_be_a_valid_two_letter_country_code",
+	2303: "must_be_a_valid_three_letter_country_code",
+
+	2401: "must_be_a_valid_URL",
+	2402: "must_be_a_valid_request_URL",
+	2403: "must_be_a_valid_request_URI",
+	2404: "must_be_a_valid_dial_string",
+	2405: "must_be_a_valid_MAC_address",
+	2406: "must_be_a_valid_IP_address",
+	2407: "must_be_a_valid_IPv4_address",
+	2408: "must_be_a_valid_IPv6_address",
+	2409: "must_be_a_valid_subdomain",
+	2410: "must_be_a_valid_domain",
+	2411: "must_be_a_valid_DNS_name",
+	2412: "must_be_a_valid_IP_address_or_DNS_name",
+	2413: "must_be_a_valid_port_number",
+
+	2501: "must_be_a_valid_hex_encoded_MongoDB_ObjectId",
+
+	2601: "must_be_a_valid_latitude",
+	2602: "must_be_a_valid_longitude",
+
+	2701: "must_be_a_valid_social_security_number",
+	2702: "must_be_a_valid_semantic_version",
+
+	2801: "inn_10_simbols_not_correct",
+	2802: "inn_12_simbols_not_correct",
+	2803: "inn_not_correct",
+	2804: "ogrn_Law_not_correct",
+	2805: "ogrn_IP_not_correct",
+	2806: "ogrn_not_correct",
+	2807: "okato_not_correct",
+	2808: "snils_not_correct",
 }
 
-func (e *externalError) Error() string {
-	if e.GetCode() == 0 {
-		return fmt.Sprintf("%v", e.error)
-	}
-	return fmt.Sprintf("%v, ErrCode: %v", e.error, e.GetCode())
+type ErrStack struct {
+	Stack map[string]goerr.IError
+	goerr.IError
 }
 
-// NewExternalError wraps a given error into an InternalError.
-func NewExternalError(err error, code int) ExternalError {
-	return &externalError{error: err, code: code}
+func NewErrStack() ErrStack {
+	mp := make(map[string]goerr.IError)
+	return ErrStack{
+		Stack: mp,
+	}
 }
 
-// InternalError returns the actual error that it wraps around.
-func (e *externalError) GetCode() int {
-	return e.code
-}
-
-// Error returns the error string of Errors.
-func (es Errors) Error() string {
-	if len(es) == 0 {
-		return ""
+func NewGoerr(code int, args ...interface{}) goerr.IError {
+	errtxt, ok := mpErr[code]
+	if !ok {
+		errtxt = "UnknownError"
 	}
-
-	keys := []string{}
-	for key := range es {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
-
-	s := ""
-	for i, key := range keys {
-		if i > 0 {
-			s += "; "
-		}
-		if errs, ok := es[key].(Errors); ok {
-			s += fmt.Sprintf("%v: (%v)", key, errs.ExternalError().Error())
-		} else {
-			s += fmt.Sprintf("%v: %v", key, es[key].Error())
-		}
-	}
-	return s + "."
-}
-
-func (es Errors) ExternalError() error {
-	if len(es) == 0 {
-		return nil
-	}
-
-	keys := []string{}
-	for key := range es {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
-
-	s := ""
-	for i, key := range keys {
-		if i > 0 {
-			s += "; "
-		}
-		if errs, ok := es[key].(Errors); ok {
-			s += fmt.Sprintf("%v: (%v)", key, errs)
-		} else {
-			s += fmt.Sprintf("%v: %v", key, es[key].Error())
-		}
-	}
-	return errors.New(s)
-}
-
-func (es Errors) GetCode() int {
-	if len(es) == 0 {
-		return 0
-	}
-
-	keys := []string{}
-	for key := range es {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
-
-	s := ""
-	for i, key := range keys {
-		if i > 0 {
-			s += "; "
-		}
-		if errs, ok := es[key].(ExternalError); ok {
-			s += fmt.Sprintf("%v: (%v)", key, errs.GetCode())
-		} else {
-			s += fmt.Sprintf("%v: %v", key, es[key].Error())
-		}
-	}
-	return 0
-}
-
-// MarshalJSON converts the Errors into a valid JSON.
-func (es Errors) MarshalJSON() ([]byte, error) {
-	errs := map[string]interface{}{}
-	for key, err := range es {
-
-		if ms, ok := err.(json.Marshaler); ok {
-			errs[key] = ms
-		} else {
-			errs[key] = jsonError{Err: err.ExternalError().Error(), ErrCode: err.GetCode()}
-		}
-	}
-	return json.Marshal(errs)
-}
-
-// Filter removes all nils from Errors and returns back the updated Errors as an error.
-// If the length of Errors becomes 0, it will return nil.
-func (es Errors) Filter() error {
-	for key, value := range es {
-		if value == nil {
-			delete(es, key)
-		}
-	}
-	if len(es) == 0 {
-		return nil
-	}
-	return es
+	return goerr.New(fmt.Sprintf(errtxt, args...)).Http(http.StatusBadRequest)
 }

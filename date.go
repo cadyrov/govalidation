@@ -1,7 +1,6 @@
 package validation
 
 import (
-	"errors"
 	"time"
 )
 
@@ -27,26 +26,10 @@ type DateRule struct {
 // An empty value is considered valid. Use the Required rule to make sure a value is not empty.
 func Date(layout string) *DateRule {
 	return &DateRule{
-		layout:       layout,
-		message:      MsgByCode(1102),
-		rangeMessage: MsgByCode(1103),
-		code:         1102,
-		rangeCode:    1103,
+		layout:    layout,
+		code:      1102,
+		rangeCode: 1103,
 	}
-}
-
-// Error sets the error message that is used when the value being validated is not a valid date.
-func (r *DateRule) Error(message string) *DateRule {
-	r.message = message
-	r.code = 1102
-	return r
-}
-
-// RangeError sets the error message that is used when the value being validated is out of the specified Min/Max date range.
-func (r *DateRule) RangeError(message string) *DateRule {
-	r.rangeMessage = message
-	r.rangeCode = 1103
-	return r
 }
 
 // Min sets the minimum date range. A zero value means skipping the minimum range validation.
@@ -62,25 +45,23 @@ func (r *DateRule) Max(max time.Time) *DateRule {
 }
 
 // Validate checks if the given value is a valid date.
-func (r *DateRule) Validate(value interface{}) ExternalError {
+func (r *DateRule) Validate(value interface{}) (code int, args []interface{}) {
 	value, isNil := Indirect(value)
 	if isNil || IsEmpty(value) {
-		return nil
+		return
 	}
-
-	str, err := EnsureString(value)
-	if err != nil {
-		return err
+	str, code := EnsureString(value)
+	if code != 0 {
+		return
 	}
-
 	date, errt := time.Parse(r.layout, str)
 	if errt != nil {
-		return NewExternalError(errors.New(r.message), r.code)
+		code = r.code
+		return
 	}
-
 	if !r.min.IsZero() && r.min.After(date) || !r.max.IsZero() && date.After(r.max) {
-		return NewExternalError(errors.New(r.rangeMessage), r.rangeCode)
+		code = r.rangeCode
+		return
 	}
-
-	return nil
+	return
 }
