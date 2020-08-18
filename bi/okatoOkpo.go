@@ -1,23 +1,21 @@
 package bi
 
 import (
-	"errors"
 	validation "github.com/cadyrov/govalidation"
 	"github.com/cadyrov/govalidation/is"
 	"strconv"
 )
 
-var OkatoOkpo = &okatoOkpoRule{message: validation.MsgByCode(2807), code: 2807}
+var OkatoOkpo = &okatoOkpoRule{code: 2870}
 
 type okatoOkpoRule struct {
-	message string
-	code    int
+	code int
 }
 
-func (inn *okatoOkpoRule) Validate(value interface{}) validation.ExternalError {
+func (inn *okatoOkpoRule) Validate(value interface{}) (code int, args []interface{}) {
 	value, isNil := validation.Indirect(value)
 	if isNil || validation.IsEmpty(value) {
-		return nil
+		return
 	}
 
 	var s string
@@ -29,11 +27,12 @@ func (inn *okatoOkpoRule) Validate(value interface{}) validation.ExternalError {
 	case int64:
 		s = strconv.FormatInt(value.(int64), 10)
 	default:
-		return validation.NewExternalError(errors.New("can't parse value "), 2807)
+		code = 2870
+		return
 	}
 
-	if err := is.Digit.Validate(s); err != nil {
-		return err
+	if code, args = is.Digit.Validate(s); code != 0 {
+		return
 	}
 
 	digits := make([]int64, 0)
@@ -53,15 +52,15 @@ func (inn *okatoOkpoRule) Validate(value interface{}) validation.ExternalError {
 	}
 
 	if cn != controlDigit {
-		return validation.NewExternalError(errors.New("invalid control value "), 2807)
+		code = 2870
+		return
 	}
-	return nil
+	return
 }
 
 func (r *okatoOkpoRule) Error(message string) *snilsRule {
 	return &snilsRule{
-		message: message,
-		code:    2807,
+		code: 2807,
 	}
 }
 

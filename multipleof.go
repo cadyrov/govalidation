@@ -1,56 +1,51 @@
 package validation
 
 import (
-	"errors"
-	"fmt"
 	"reflect"
 )
 
 func MultipleOf(threshold interface{}) *multipleOfRule {
 	return &multipleOfRule{
 		threshold,
-		fmt.Sprintf(MsgByCode(1106), threshold),
 		1106,
 	}
 }
 
 type multipleOfRule struct {
 	threshold interface{}
-	message   string
 	code      int
 }
 
-// Error sets the error message for the rule.
-func (r *multipleOfRule) Error(message string) *multipleOfRule {
-	r.message = message
-	return r
-}
-
-func (r *multipleOfRule) Validate(value interface{}) error {
-
+func (r *multipleOfRule) Validate(value interface{}) (code int, args []interface{}) {
 	rv := reflect.ValueOf(r.threshold)
+	args = append(args, rv.Kind())
 	switch rv.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		v, err := ToInt(value)
 		if err != nil {
-			return err
+			code = r.code
+			return
 		}
 		if v%rv.Int() == 0 {
-			return nil
+			code = r.code
+			return
 		}
 
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
 		v, err := ToUint(value)
 		if err != nil {
-			return err
+			code = r.code
+			return
 		}
 
 		if v%rv.Uint() == 0 {
-			return nil
+			code = r.code
+			return
 		}
 	default:
-		return fmt.Errorf("type not supported: %v", rv.Type())
+		code = r.code
+		return
 	}
 
-	return errors.New(r.message)
+	return
 }

@@ -1,24 +1,22 @@
 package bi
 
 import (
-	"errors"
 	validation "github.com/cadyrov/govalidation"
 	"github.com/cadyrov/govalidation/is"
 	"strconv"
 	"unicode/utf8"
 )
 
-var Inn12 = &inn12Rule{message: validation.MsgByCode(2802), code: 2802}
+var Inn12 = &inn12Rule{code: 2820}
 
 type inn12Rule struct {
-	message string
-	code    int
+	code int
 }
 
-func (inn *inn12Rule) Validate(value interface{}) validation.ExternalError {
+func (inn *inn12Rule) Validate(value interface{}) (code int, args []interface{}) {
 	value, isNil := validation.Indirect(value)
 	if isNil || validation.IsEmpty(value) {
-		return nil
+		return
 	}
 	var s string
 	switch value.(type) {
@@ -29,28 +27,30 @@ func (inn *inn12Rule) Validate(value interface{}) validation.ExternalError {
 	case int64:
 		s = strconv.FormatInt(value.(int64), 10)
 	default:
-		return validation.NewExternalError(errors.New("can't parse value "), 2802)
+		code = 2821
+		return
 	}
 
-	if err := is.Digit.Validate(s); err != nil {
-		return err
+	if code, args = is.Digit.Validate(s); code != 0 {
+		return
 	}
 
 	if utf8.RuneCountInString(s) != 12 {
-		return validation.NewExternalError(errors.New("only 12 digits"), 2802)
+		code = 2822
+		return
 	}
 
 	coefficients11 := []int64{7, 2, 4, 10, 3, 5, 9, 4, 6, 8}
 	coefficients12 := []int64{3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8}
 	if !checkInnDigits(s, coefficients11) || !checkInnDigits(s, coefficients12) {
-		return validation.NewExternalError(errors.New("control sum is invalid"), 2802)
+		code = 2823
+		return
 	}
-	return nil
+	return
 }
 
 func (r *inn12Rule) Error(message string) *inn12Rule {
 	return &inn12Rule{
-		message: message,
-		code:    2802,
+		code: 2802,
 	}
 }

@@ -1,12 +1,4 @@
-// Copyright 2018 Qiang Xue, Google LLC. All rights reserved.
-// Use of this source code is governed by a MIT-style
-// license that can be found in the LICENSE file.
-
 package validation
-
-import (
-	"errors"
-)
 
 // NotIn returns a validation rule that checks if a value os absent from, the given list of values.
 // Note that the value being checked and the possible range of values must be of the same type.
@@ -14,34 +6,26 @@ import (
 func NotIn(values ...interface{}) *NotInRule {
 	return &NotInRule{
 		elements: values,
-		message:  MsgByCode(1107),
 		code:     1107,
 	}
 }
 
 type NotInRule struct {
 	elements []interface{}
-	message  string
 	code     int
 }
 
 // Validate checks if the given value is valid or not.
-func (r *NotInRule) Validate(value interface{}) error {
+func (r *NotInRule) Validate(value interface{}) (code int, args []interface{}) {
 	value, isNil := Indirect(value)
 	if isNil || IsEmpty(value) {
-		return nil
+		return
 	}
-
 	for _, e := range r.elements {
 		if e == value {
-			return errors.New(r.message)
+			code = r.code
+			return
 		}
 	}
-	return nil
-}
-
-// Error sets the error message for the rule.
-func (r *NotInRule) Error(message string) *NotInRule {
-	r.message = message
-	return r
+	return
 }

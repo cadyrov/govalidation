@@ -1,7 +1,6 @@
 package bi
 
 import (
-	"errors"
 	validation "github.com/cadyrov/govalidation"
 
 	"strconv"
@@ -27,30 +26,29 @@ func checkInnDigits(inn string, coefficients []int64) bool {
 	return false
 }
 
-var Inn1012 = &inn1012Rule{message: validation.MsgByCode(2803), code: 2803}
+var Inn1012 = &inn1012Rule{code: 2803}
 
 type inn1012Rule struct {
-	message string
-	code    int
+	code int
 }
 
-func (inn *inn1012Rule) Validate(value interface{}) validation.ExternalError {
+func (inn *inn1012Rule) Validate(value interface{}) (code int, args []interface{}) {
 	value, isNil := validation.Indirect(value)
 	if isNil || validation.IsEmpty(value) {
-		return nil
+		return
 	}
-	err10 := Inn10.Validate(value)
-	err12 := Inn12.Validate(value)
+	err10, _ := Inn10.Validate(value)
+	err12, _ := Inn12.Validate(value)
 
-	if err10 != nil && err12 != nil {
-		return validation.NewExternalError(errors.New(" 10 or 12 digits and control value "), 2803)
+	if err10 != 0 && err12 != 0 {
+		code = inn.code
+		return
 	}
-	return nil
+	return
 }
 
 func (r *inn1012Rule) Error(message string) *inn1012Rule {
 	return &inn1012Rule{
-		message: message,
-		code:    2803,
+		code: 2830,
 	}
 }
