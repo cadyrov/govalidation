@@ -1,24 +1,22 @@
 package bi
 
 import (
-	"errors"
 	validation "github.com/cadyrov/govalidation"
 	"github.com/cadyrov/govalidation/is"
 	"strconv"
 	"unicode/utf8"
 )
 
-var OPGNIp = &ogrnIpRule{message: validation.MsgByCode(2804), code: 2804}
+var OPGNIp = &ogrnIpRule{code: 2850}
 
 type ogrnIpRule struct {
-	message string
-	code    int
+	code int
 }
 
-func (inn *ogrnIpRule) Validate(value interface{}) validation.ExternalError {
+func (oip *ogrnIpRule) Validate(value interface{}) (code int, args []interface{}) {
 	value, isNil := validation.Indirect(value)
 	if isNil || validation.IsEmpty(value) {
-		return nil
+		return
 	}
 	var s string
 	switch value.(type) {
@@ -29,15 +27,17 @@ func (inn *ogrnIpRule) Validate(value interface{}) validation.ExternalError {
 	case int64:
 		s = strconv.FormatInt(value.(int64), 10)
 	default:
-		return validation.NewExternalError(errors.New("can't parse value "), 2804)
+		code = oip.code
+		return
 	}
 
-	if err := is.Digit.Validate(s); err != nil {
-		return err
+	if code, args = is.Digit.Validate(s); code != 0 {
+		return
 	}
 
 	if utf8.RuneCountInString(s) != 15 {
-		return validation.NewExternalError(errors.New("only 15 digits"), 2804)
+		code = 2851
+		return
 	}
 
 	s14 := s[:len(s)-1]
@@ -48,14 +48,14 @@ func (inn *ogrnIpRule) Validate(value interface{}) validation.ExternalError {
 	sn := strconv.FormatInt(os, 10)
 	snX, _ := strconv.ParseInt(string(sn[len(sn)-1]), 10, 12)
 	if snX != i15 {
-		return validation.NewExternalError(errors.New("invalid control data"), 2804)
+		code = 2552
+		return
 	}
-	return nil
+	return
 }
 
 func (r *ogrnIpRule) Error(message string) *ogrnIpRule {
 	return &ogrnIpRule{
-		message: message,
-		code:    2804,
+		code: 2850,
 	}
 }

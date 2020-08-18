@@ -4,6 +4,7 @@ package validation
 import (
 	"fmt"
 	"github.com/cadyrov/goerr"
+	"github.com/cadyrov/govalidation/verror"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -49,7 +50,7 @@ func Validate(value interface{}, rules ...Rule) goerr.IError {
 			return nil
 		}
 		if code, args := rule.Validate(value); code != 0 {
-			return NewGoerr(code, args...)
+			return verror.NewGoerr(code, args...)
 		}
 	}
 
@@ -59,7 +60,7 @@ func Validate(value interface{}, rules ...Rule) goerr.IError {
 	}
 	if v, ok := value.(Validatable); ok {
 		if code, args := v.Validate(); code != 0 {
-			return NewGoerr(code, args...)
+			return verror.NewGoerr(code, args...)
 		}
 		return nil
 	}
@@ -81,11 +82,11 @@ func Validate(value interface{}, rules ...Rule) goerr.IError {
 
 // validateMap validates a map of validatable elements
 func validateMap(rv reflect.Value) goerr.IError {
-	errs := NewErrStack()
+	errs := verror.NewErrStack()
 	for _, key := range rv.MapKeys() {
 		if mv := rv.MapIndex(key).Interface(); mv != nil {
 			if code, args := mv.(Validatable).Validate(); code != 0 {
-				errs.Stack[fmt.Sprintf("%v", key.Interface())] = NewGoerr(code, args)
+				errs.Stack[fmt.Sprintf("%v", key.Interface())] = verror.NewGoerr(code, args)
 			}
 		}
 	}
@@ -98,12 +99,12 @@ func validateMap(rv reflect.Value) goerr.IError {
 
 // validateMap validates a slice/array of validatable elements
 func validateSlice(rv reflect.Value) goerr.IError {
-	errs := NewErrStack()
+	errs := verror.NewErrStack()
 	l := rv.Len()
 	for i := 0; i < l; i++ {
 		if ev := rv.Index(i).Interface(); ev != nil {
 			if code, args := ev.(Validatable).Validate(); code != 0 {
-				errs.Stack[strconv.Itoa(i)] = NewGoerr(code, args)
+				errs.Stack[strconv.Itoa(i)] = verror.NewGoerr(code, args)
 			}
 		}
 	}

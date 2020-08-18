@@ -2,13 +2,14 @@ package validation
 
 import (
 	"github.com/cadyrov/goerr"
+	"github.com/cadyrov/govalidation/verror"
 	"reflect"
 	"strings"
 )
 
 var (
 	// ErrStructPointer is the error that a struct being validated is not specified as a pointer.
-	ErrStructPointer = NewGoerr(1001)
+	ErrStructPointer = verror.NewGoerr(1001)
 )
 
 type (
@@ -47,21 +48,21 @@ func ValidateStruct(structPtr interface{}, fields ...*FieldRules) goerr.IError {
 	}
 	value = value.Elem()
 
-	errs := NewErrStack()
+	errs := verror.NewErrStack()
 
 	for _, fr := range fields {
 		fv := reflect.ValueOf(fr.fieldPtr)
 		if fv.Kind() != reflect.Ptr {
-			return NewGoerr(1002)
+			return verror.NewGoerr(1002)
 		}
 		ft := findStructField(value, fv)
 		if ft == nil {
-			return NewGoerr(1003)
+			return verror.NewGoerr(1003)
 		}
 		if err := Validate(fv.Elem().Interface(), fr.rules...); err != nil {
 			if ft.Anonymous {
 				// merge errors from anonymous struct field
-				if es, ok := err.(ErrStack); ok {
+				if es, ok := err.(verror.ErrStack); ok {
 					for name, value := range es.Stack {
 						errs.Stack[name] = value
 					}

@@ -1,4 +1,4 @@
-package validation
+package verror
 
 import (
 	"fmt"
@@ -99,14 +99,22 @@ var mpErr map[int]string = map[int]string{
 	2701: "must_be_a_valid_social_security_number",
 	2702: "must_be_a_valid_semantic_version",
 
-	2801: "inn_10_simbols_not_correct",
-	2802: "inn_12_simbols_not_correct",
-	2803: "inn_not_correct",
-	2804: "ogrn_Law_not_correct",
-	2805: "ogrn_IP_not_correct",
-	2806: "ogrn_not_correct",
-	2807: "okato_not_correct",
-	2808: "snils_not_correct",
+	2810: "inn_10_simbols_not_correct",
+	2811: "only 10 digits",
+	2812: "control_sum_is_invalid",
+	2820: "inn_12_simbols_not_correct",
+	2821: "can't_parse_value",
+	2822: "only_12_digits",
+	2823: "control_sum_is_invalid",
+	2830: "inn_not_correct",
+	2840: "ogrn_Law_not_correct",
+	2841: "only_13_digits",
+	2850: "ogrn_IP_not_correct",
+	2851: "only_15_digits",
+	2852: "control_sum_is_invalid",
+	2860: "ogrn_not_correct",
+	2870: "okato_not_correct",
+	2880: "snils_not_correct",
 }
 
 type ErrStack struct {
