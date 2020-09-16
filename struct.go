@@ -10,7 +10,7 @@ import (
 
 var (
 	// ErrStructPointer is the error that a struct being validated is not specified as a pointer.
-	ErrStructPointer = verror.NewGoerr(1001)
+	ErrStructPointer = verror.NewGoErr(1001)
 )
 
 type (

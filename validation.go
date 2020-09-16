@@ -92,7 +92,7 @@ func validateMap(rv reflect.Value) goerr.IError {
 		}
 	}
 	if len(errs.Stack) > 0 {
-		errs.IError = goerr.New("").Http(http.StatusBadRequest)
+		errs.IError = goerr.New("").HTTP(http.StatusBadRequest)
 		return errs
 	}
 	return nil
@@ -110,7 +110,7 @@ func validateSlice(rv reflect.Value) goerr.IError {
 		}
 	}
 	if len(errs.Stack) > 0 {
-		errs.IError = goerr.New("").Http(http.StatusBadRequest)
+		errs.IError = goerr.New("").HTTP(http.StatusBadRequest)
 		return errs
 	}
 	return nil
