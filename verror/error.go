@@ -130,10 +130,10 @@ func NewErrStack() ErrStack {
 	}
 }
 
-func NewGoerr(code int, args ...interface{}) goerr.IError {
+func NewGoErr(code int, args ...interface{}) goerr.IError {
 	errtxt, ok := mpErr[code]
 	if !ok {
 		errtxt = "UnknownError"
 	}
-	return goerr.New(fmt.Sprintf(errtxt, args...)).Http(http.StatusBadRequest)
+	return goerr.New(fmt.Sprintf(errtxt, args...)).HTTP(http.StatusBadRequest)
 }

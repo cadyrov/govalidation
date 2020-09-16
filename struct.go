@@ -53,11 +53,11 @@ func ValidateStruct(structPtr interface{}, fields ...*FieldRules) goerr.IError {
 	for _, fr := range fields {
 		fv := reflect.ValueOf(fr.fieldPtr)
 		if fv.Kind() != reflect.Ptr {
-			return verror.NewGoerr(1002)
+			return verror.NewGoErr(1002)
 		}
 		ft := findStructField(value, fv)
 		if ft == nil {
-			return verror.NewGoerr(1003)
+			return verror.NewGoErr(1003)
 		}
 		if err := Validate(fv.Elem().Interface(), fr.rules...); err != nil {
 			if ft.Anonymous {

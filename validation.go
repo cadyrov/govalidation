@@ -51,7 +51,7 @@ func Validate(value interface{}, rules ...Rule) goerr.IError {
 			return nil
 		}
 		if code, args := rule.Validate(value); code != 0 {
-			return verror.NewGoerr(code, args...)
+			return verror.NewGoErr(code, args...)
 		}
 	}
 
@@ -61,7 +61,7 @@ func Validate(value interface{}, rules ...Rule) goerr.IError {
 	}
 	if v, ok := value.(Validatable); ok {
 		if code, args := v.Validate(); code != 0 {
-			return verror.NewGoerr(code, args...)
+			return verror.NewGoErr(code, args...)
 		}
 		return nil
 	}
@@ -87,7 +87,7 @@ func validateMap(rv reflect.Value) goerr.IError {
 	for _, key := range rv.MapKeys() {
 		if mv := rv.MapIndex(key).Interface(); mv != nil {
 			if code, args := mv.(Validatable).Validate(); code != 0 {
-				errs.Stack[fmt.Sprintf("%v", key.Interface())] = verror.NewGoerr(code, args)
+				errs.Stack[fmt.Sprintf("%v", key.Interface())] = verror.NewGoErr(code, args)
 			}
 		}
 	}
@@ -105,7 +105,7 @@ func validateSlice(rv reflect.Value) goerr.IError {
 	for i := 0; i < l; i++ {
 		if ev := rv.Index(i).Interface(); ev != nil {
 			if code, args := ev.(Validatable).Validate(); code != 0 {
-				errs.Stack[strconv.Itoa(i)] = verror.NewGoerr(code, args)
+				errs.Stack[strconv.Itoa(i)] = verror.NewGoErr(code, args)
 			}
 		}
 	}
