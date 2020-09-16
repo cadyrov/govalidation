@@ -1,10 +1,11 @@
 package validation
 
 import (
-	"github.com/cadyrov/goerr"
-	"github.com/cadyrov/govalidation/verror"
 	"reflect"
 	"strings"
+
+	"github.com/cadyrov/goerr"
+	"github.com/cadyrov/govalidation/verror"
 )
 
 var (
@@ -39,7 +40,6 @@ func (e ErrFieldNotFound) GetCode() int {
 func ValidateStruct(structPtr interface{}, fields ...*FieldRules) goerr.IError {
 	value := reflect.ValueOf(structPtr)
 	if value.Kind() != reflect.Ptr || !value.IsNil() && value.Elem().Kind() != reflect.Struct {
-		// must be a pointer to a struct
 		return ErrStructPointer
 	}
 	if value.IsNil() {

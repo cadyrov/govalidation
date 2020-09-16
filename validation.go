@@ -3,11 +3,12 @@ package validation
 
 import (
 	"fmt"
-	"github.com/cadyrov/goerr"
-	"github.com/cadyrov/govalidation/verror"
 	"net/http"
 	"reflect"
 	"strconv"
+
+	"github.com/cadyrov/goerr"
+	"github.com/cadyrov/govalidation/verror"
 )
 
 type (
