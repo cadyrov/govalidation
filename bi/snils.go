@@ -1,10 +1,11 @@
 package bi
 
 import (
-	validation "github.com/cadyrov/govalidation"
-	"github.com/cadyrov/govalidation/is"
 	"strconv"
 	"unicode/utf8"
+
+	validation "github.com/cadyrov/govalidation"
+	"github.com/cadyrov/govalidation/is"
 )
 
 var Snils = &snilsRule{code: 2808}

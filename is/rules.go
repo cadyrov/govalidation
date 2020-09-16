@@ -2,10 +2,11 @@
 package is
 
 import (
-	"github.com/asaskevich/govalidator"
-	"github.com/cadyrov/govalidation"
 	"regexp"
 	"unicode"
+
+	"github.com/asaskevich/govalidator"
+	validation "github.com/cadyrov/govalidation"
 )
 
 var (

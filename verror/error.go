@@ -2,8 +2,9 @@ package verror
 
 import (
 	"fmt"
-	"github.com/cadyrov/goerr"
 	"net/http"
+
+	"github.com/cadyrov/goerr"
 )
 
 var mpErr map[int]string = map[int]string{

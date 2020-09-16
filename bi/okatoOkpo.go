@@ -1,9 +1,10 @@
 package bi
 
 import (
+	"strconv"
+
 	validation "github.com/cadyrov/govalidation"
 	"github.com/cadyrov/govalidation/is"
-	"strconv"
 )
 
 var OkatoOkpo = &okatoOkpoRule{code: 2870}

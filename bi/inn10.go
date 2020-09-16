@@ -1,10 +1,11 @@
 package bi
 
 import (
-	validation "github.com/cadyrov/govalidation"
-	"github.com/cadyrov/govalidation/is"
 	"strconv"
 	"unicode/utf8"
+
+	validation "github.com/cadyrov/govalidation"
+	"github.com/cadyrov/govalidation/is"
 )
 
 var Inn10 = &inn10Rule{code: 2810}
