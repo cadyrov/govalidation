@@ -3,7 +3,6 @@ package validation
 
 import (
 	"fmt"
-	"net/http"
 	"reflect"
 	"strconv"
 
@@ -83,7 +82,7 @@ func Validate(value interface{}, rules ...Rule) goerr.IError {
 
 // validateMap validates a map of validatable elements
 func validateMap(rv reflect.Value) goerr.IError {
-	errs := verror.NewErrStack()
+	errs := verror.NewErrStack("validationError")
 	for _, key := range rv.MapKeys() {
 		if mv := rv.MapIndex(key).Interface(); mv != nil {
 			if code, args := mv.(Validatable).Validate(); code != 0 {
@@ -92,7 +91,6 @@ func validateMap(rv reflect.Value) goerr.IError {
 		}
 	}
 	if len(errs.Stack) > 0 {
-		errs.IError = goerr.New("").HTTP(http.StatusBadRequest)
 		return errs
 	}
 	return nil
@@ -100,7 +98,7 @@ func validateMap(rv reflect.Value) goerr.IError {
 
 // validateMap validates a slice/array of validatable elements
 func validateSlice(rv reflect.Value) goerr.IError {
-	errs := verror.NewErrStack()
+	errs := verror.NewErrStack("validationError")
 	l := rv.Len()
 	for i := 0; i < l; i++ {
 		if ev := rv.Index(i).Interface(); ev != nil {
@@ -110,7 +108,6 @@ func validateSlice(rv reflect.Value) goerr.IError {
 		}
 	}
 	if len(errs.Stack) > 0 {
-		errs.IError = goerr.New("").HTTP(http.StatusBadRequest)
 		return errs
 	}
 	return nil

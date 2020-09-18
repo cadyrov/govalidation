@@ -41,6 +41,7 @@ func (r *DateRule) Min(min time.Time) *DateRule {
 // Max sets the maximum date range. A zero value means skipping the maximum range validation.
 func (r *DateRule) Max(max time.Time) *DateRule {
 	r.max = max
+
 	return r
 }
 
