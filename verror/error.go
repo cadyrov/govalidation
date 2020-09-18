@@ -123,10 +123,12 @@ type ErrStack struct {
 	goerr.IError
 }
 
-func NewErrStack() ErrStack {
+func NewErrStack(message string) ErrStack {
 	mp := make(map[string]goerr.IError)
+	e := goerr.New(message)
 	return ErrStack{
-		Stack: mp,
+		Stack:  mp,
+		IError: e,
 	}
 }
 

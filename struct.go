@@ -48,7 +48,7 @@ func ValidateStruct(structPtr interface{}, fields ...*FieldRules) goerr.IError {
 	}
 	value = value.Elem()
 
-	errs := verror.NewErrStack()
+	errs := verror.NewErrStack("validatoin error")
 
 	for _, fr := range fields {
 		fv := reflect.ValueOf(fr.fieldPtr)
