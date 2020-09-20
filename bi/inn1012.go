@@ -23,6 +23,7 @@ func checkInnDigits(inn string, coefficients []int64) bool {
 	if n == innSl[len(coefficients)] {
 		return true
 	}
+
 	return false
 }
 

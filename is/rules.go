@@ -156,9 +156,10 @@ func isDomain(value string) bool {
 
 func isUTFNumeric(value string) bool {
 	for _, c := range value {
-		if unicode.IsNumber(c) == false {
+		if !unicode.IsNumber(c) {
 			return false
 		}
 	}
+
 	return true
 }

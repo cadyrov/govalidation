@@ -50,11 +50,18 @@ func Max(max interface{}) *ThresholdRule {
 func (r *ThresholdRule) Exclusive() *ThresholdRule {
 	if r.operator == greaterEqualThan {
 		r.operator = greaterThan
+
 		r.message = fmt.Sprintf("must be greater than %v", r.threshold)
-	} else if r.operator == lessEqualThan {
+
+		return r
+	}
+
+	if r.operator == lessEqualThan {
 		r.operator = lessThan
+
 		r.message = fmt.Sprintf("must be less than %v", r.threshold)
 	}
+
 	return r
 }
 
@@ -109,8 +116,10 @@ func (r *ThresholdRule) Validate(value interface{}) (code int, args []interface{
 			v, err := ToInt(value)
 			if err != nil {
 				code = 1000
+
 				return
 			}
+
 			if r.compareInt(rv.Int(), v) {
 				return
 			}

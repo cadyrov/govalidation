@@ -35,6 +35,7 @@ func Date(layout string) *DateRule {
 // Min sets the minimum date range. A zero value means skipping the minimum range validation.
 func (r *DateRule) Min(min time.Time) *DateRule {
 	r.min = min
+
 	return r
 }
 
@@ -51,18 +52,23 @@ func (r *DateRule) Validate(value interface{}) (code int, args []interface{}) {
 	if isNil || IsEmpty(value) {
 		return
 	}
+
 	str, code := EnsureString(value)
 	if code != 0 {
 		return
 	}
+
 	date, errt := time.Parse(r.layout, str)
 	if errt != nil {
 		code = r.code
+
 		return
 	}
 	if !r.min.IsZero() && r.min.After(date) || !r.max.IsZero() && date.After(r.max) {
 		code = r.rangeCode
+
 		return
 	}
+
 	return
 }
