@@ -118,18 +118,11 @@ var mpErr map[int]string = map[int]string{
 	2880: "snils_not_correct",
 }
 
-type ErrStack struct {
-	Details      map[string]goerr.IError `json:"details"`
-	goerr.IError `json:"error"`
-}
+type ErrStack goerr.IError
 
 func NewErrStack(message string) ErrStack {
-	mp := make(map[string]goerr.IError)
 	e := goerr.New(message)
-	return ErrStack{
-		Details: mp,
-		IError:  e,
-	}
+	return e
 }
 
 func NewGoErr(code int, args ...interface{}) goerr.IError {
