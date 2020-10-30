@@ -63,17 +63,17 @@ func ValidateStruct(structPtr interface{}, fields ...*FieldRules) goerr.IError {
 			if ft.Anonymous {
 				// merge errors from anonymous struct field
 				if es, ok := err.(verror.ErrStack); ok {
-					for name, value := range es.Stack {
-						errs.Stack[name] = value
+					for name, value := range es.Details {
+						errs.Details[name] = value
 					}
 					continue
 				}
 			}
-			errs.Stack[getErrorFieldName(ft)] = err
+			errs.Details[getErrorFieldName(ft)] = err
 		}
 	}
 
-	if len(errs.Stack) > 0 {
+	if len(errs.Details) > 0 {
 		return errs
 	}
 	return nil

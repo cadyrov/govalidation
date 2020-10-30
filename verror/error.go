@@ -119,8 +119,8 @@ var mpErr map[int]string = map[int]string{
 }
 
 type ErrStack struct {
-	Details map[string]goerr.IError `json:"details"`
-	Error   goerr.IError            `json:"error"`
+	Details      map[string]goerr.IError `json:"details"`
+	goerr.IError `json:"error"`
 }
 
 func NewErrStack(message string) ErrStack {
@@ -128,7 +128,7 @@ func NewErrStack(message string) ErrStack {
 	e := goerr.New(message)
 	return ErrStack{
 		Details: mp,
-		Error:   e,
+		IError:  e,
 	}
 }
 
