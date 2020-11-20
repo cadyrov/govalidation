@@ -3,6 +3,7 @@ package validation
 
 import (
 	"fmt"
+	"net/http"
 	"reflect"
 	"strconv"
 
@@ -112,7 +113,7 @@ func validateSlice(rv reflect.Value) goerr.IError {
 		}
 	}
 	if len(errs.GetDetails()) > 0 {
-		return errs
+		return errs.HTTP(http.StatusBadRequest)
 	}
 	return nil
 }
