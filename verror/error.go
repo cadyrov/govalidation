@@ -121,7 +121,7 @@ var mpErr map[int]string = map[int]string{
 type ErrStack goerr.IError
 
 func NewErrStack(message string) ErrStack {
-	e := goerr.New(message)
+	e := goerr.New(message).HTTP(http.StatusBadRequest)
 	return e
 }
 
