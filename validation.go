@@ -3,11 +3,10 @@ package validation
 
 import (
 	"fmt"
-	"net/http"
 	"reflect"
 	"strconv"
 
-	"github.com/cadyrov/goerr"
+	"github.com/cadyrov/goerr/v2"
 	"github.com/cadyrov/govalidation/verror"
 )
 
@@ -88,12 +87,12 @@ func validateMap(rv reflect.Value) goerr.IError {
 		if mv := rv.MapIndex(key).Interface(); mv != nil {
 			if code, args := mv.(Validatable).Validate(); code != 0 {
 				e := verror.NewGoErr(code, args)
-				e.SetID(fmt.Sprintf("%v", key.Interface()))
+				e.Tag(fmt.Sprintf("%v", key.Interface()))
 				errs.PushDetail(e)
 			}
 		}
 	}
-	if len(errs.GetDetails()) > 0 {
+	if len(errs.Details()) > 0 {
 		return errs
 	}
 	return nil
@@ -107,14 +106,15 @@ func validateSlice(rv reflect.Value) goerr.IError {
 		if ev := rv.Index(i).Interface(); ev != nil {
 			if code, args := ev.(Validatable).Validate(); code != 0 {
 				e := verror.NewGoErr(code, args)
-				e.SetID(strconv.Itoa(i))
+				e.Tag(strconv.Itoa(i))
 				errs.PushDetail(e)
 			}
 		}
 	}
-	if len(errs.GetDetails()) > 0 {
-		return errs.HTTP(http.StatusBadRequest)
+	if len(errs.Details()) > 0 {
+		return errs
 	}
+
 	return nil
 }
 

@@ -1,10 +1,10 @@
 package verror
 
 import (
+	"errors"
 	"fmt"
-	"net/http"
 
-	"github.com/cadyrov/goerr"
+	"github.com/cadyrov/goerr/v2"
 )
 
 var mpErr map[int]string = map[int]string{
@@ -121,7 +121,7 @@ var mpErr map[int]string = map[int]string{
 type ErrStack goerr.IError
 
 func NewErrStack(message string) ErrStack {
-	e := goerr.New(message).HTTP(http.StatusBadRequest)
+	e := goerr.BadRequest(errors.New(message))
 	return e
 }
 
@@ -130,5 +130,5 @@ func NewGoErr(code int, args ...interface{}) goerr.IError {
 	if !ok {
 		errtxt = "UnknownError"
 	}
-	return goerr.New(fmt.Sprintf(errtxt, args...)).HTTP(http.StatusBadRequest)
+	return goerr.BadRequest(fmt.Errorf(errtxt, args...))
 }

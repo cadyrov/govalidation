@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/cadyrov/goerr"
+	"github.com/cadyrov/goerr/v2"
 	"github.com/cadyrov/govalidation/verror"
 )
 
@@ -63,19 +63,19 @@ func ValidateStruct(structPtr interface{}, fields ...*FieldRules) goerr.IError {
 			if ft.Anonymous {
 				// merge errors from anonymous struct field
 				if es, ok := err.(verror.ErrStack); ok {
-					details := es.GetDetails()
+					details := es.Details()
 					for i := range details {
 						errs.PushDetail(details[i])
 					}
 					continue
 				}
 			}
-			err.SetID(getErrorFieldName(ft))
+			err.Tag(getErrorFieldName(ft))
 			errs.PushDetail(err)
 		}
 	}
 
-	if len(errs.GetDetails()) > 0 {
+	if len(errs.Details()) > 0 {
 		return errs
 	}
 	return nil
